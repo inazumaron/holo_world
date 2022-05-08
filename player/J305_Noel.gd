@@ -1,0 +1,202 @@
+extends KinematicBody2D
+
+#--------------------stats related
+var MAX_SPEED = 300
+var ACCELERATION = 1000
+var POS_UPDATE_TIMER = .1
+var MAX_HP = 10
+var HP = 10
+var DEF = 0 #0 by default, reduces damage by a flat amount. 
+
+var ATTACK_COOLDOWN = 1
+var ATTACK_STACK_COUNT = 2
+var ATTACK_DAMAGE = 1
+var ATTACK_EFFECTS = []
+
+var SPECIAL_CODE = 0
+var SPECIAL_COOLDOWN = 1
+var SPECIAL_REGEN_TYPE = 0 #0 - auto, 1 - offensive, 2 - defensive
+
+var DAMAGE_ANIM_DUR = 0.2
+var ACTIVE = true			#for collab on field
+const WEAPON_PATH = "res://weapons/m_noel_mace.tscn"
+#---------------------------------
+var motion = Vector2.ZERO
+var last_anim_dir = 0 #0 - left, 1 - right
+
+#------------------------ Timers
+var pos_timer = 0	#update position for game
+var damage_anim_timer = 0 # damage invulnerability time
+var attack_timer = 0
+var buffs = []		#contains debuffs and buffs
+
+var minimap_base = preload("res://ui/minimap.tscn")
+var minimap = null
+var ui_base = preload("res://ui/char_ui.tscn")
+var ui = null
+
+var weapon_base = preload(WEAPON_PATH)
+var weapon = weapon_base.instance()
+
+func _ready():
+	add_to_group("player")
+	add_child(weapon)
+	generate_ui()
+	
+	ui_manipulation(0)
+
+func _physics_process(delta):
+	if ACTIVE:
+		general_action()
+		
+		general_move(delta)
+		
+		general_timer_update(delta)
+		
+		ui_manipulation(1)
+		ui_manipulation(11)
+
+func general_move(delta):
+	var axis = get_input_axis()
+	
+	if axis == Vector2.ZERO:
+		apply_friction(ACCELERATION*delta)
+	else:
+		apply_movement(axis*ACCELERATION*delta)
+	motion = move_and_slide(motion)
+
+func general_timer_update(delta):
+	if damage_anim_timer > 0:
+		damage_anim_timer -= delta
+		
+	if pos_timer > 0 :
+		pos_timer = POS_UPDATE_TIMER
+		
+	if attack_timer < ATTACK_STACK_COUNT:
+		attack_timer += delta/ATTACK_COOLDOWN
+
+func general_action():
+	if Input.is_action_just_pressed("mouse_click"):
+		attack()
+		
+	if Input.is_action_just_pressed("mouse_click_r"):
+		pass
+
+func get_input_axis():
+	var axis = Vector2.ZERO
+	axis.x = int(Input.is_action_pressed("ui_right")) - int(Input.is_action_pressed("ui_left"))
+	axis.y = int(Input.is_action_pressed("ui_down")) - int(Input.is_action_pressed("ui_up"))
+	anim_update(axis)
+	return axis.normalized()
+
+func apply_friction(amount):
+	if motion.length() > amount:
+		motion -= motion.normalized() * amount
+	else:
+		motion = Vector2.ZERO
+	return motion
+
+func apply_movement(acceleration):
+	motion += acceleration
+	motion = motion.clamped(MAX_SPEED)
+	return motion
+
+func attack():
+	if attack_timer >= 1:
+		attack_timer -= 1
+		weapon.attack()
+
+func anim_update(axis):
+	if damage_anim_timer > 0:
+		if last_anim_dir == 0:
+			$AnimatedSprite.play("damage_left")
+		else:
+			$AnimatedSprite.play("damage_right")
+	elif axis.x != 0 || axis.y != 0:
+		if axis.x > 0:
+			$AnimatedSprite.play("walk_right")
+			last_anim_dir = 1
+		elif axis.x < 0:
+			$AnimatedSprite.play("walk_left")
+			last_anim_dir = 0
+		elif last_anim_dir == 0:
+			$AnimatedSprite.play("walk_left")
+		else:
+			$AnimatedSprite.play("walk_right")
+	else:
+		if last_anim_dir == 0:
+			$AnimatedSprite.play("idle_left")
+		else:
+			$AnimatedSprite.play("idle_right")
+
+func take_damage(damage, effect):
+	print("damaged", damage)
+	if ACTIVE:
+		damage_anim_timer = DAMAGE_ANIM_DUR
+		HP -= damage
+		anim_update(Vector2.ZERO)
+		print("HP: ",HP)
+		if HP <= 0:
+			print("dead")
+			
+		ui_manipulation(0)
+
+func ui_manipulation(n):
+	#	0 - update life
+	#	1 - normal click
+	#	2 - special click
+	var data = {"param":"stat", "val":0, "val2":0}
+	match n:
+		0:
+			data["param"]="hp"
+			data["val"]=HP
+			data["val2"]=MAX_HP
+		1:
+			data["param"]="atk"
+			data["val"]=fmod(attack_timer,1)
+			data["val2"]=ATTACK_COOLDOWN
+		11:
+			data["param"]="atk_s"
+			data["val"]=floor(attack_timer)
+	ui.change(data)
+
+func send_data():
+	var data = {"CHAR_CODE":130, "HP": HP, "BUFFS": buffs, "ACTIVE":ACTIVE}
+	
+	return data
+
+func update_data(data):
+	HP = data["HP"]
+	buffs = data["BUFFS"]
+	activate(data["ACTIVE"])
+	ui_manipulation(0)
+
+func activate(x):
+	if x:
+		ACTIVE = true
+		$Camera2D.current = true
+		self.visible = true
+		$CollisionShape2D.disabled = false
+		#weapon.ACTIVE = true
+	else:
+		ACTIVE = false
+		$Camera2D.current = false
+		self.visible = false
+		$CollisionShape2D.disabled = true
+		#weapon.ACTIVE = false
+		
+func setCamera(x):
+	$Camera2D.current = x
+
+func generate_ui():
+	ui = ui_base.instance()
+	ui.position = Vector2(-380,-260)
+	add_child(ui)
+	ui_manipulation(0)
+
+func generate_minimap(path, active_room_val):
+	minimap = minimap_base.instance()
+	minimap.map = path
+	minimap.loc = active_room_val
+	add_child(minimap)
+	minimap.generate_minimap()

@@ -1,0 +1,152 @@
+extends Node2D
+
+#===============================================================================
+#==== Creating new rooms will only require you to change this part =============
+#===============================================================================
+#		*unless of course adding new features
+
+#Variables
+const wall = true # for tiles extending 2 tiles
+const variation = 2 #amount of variation of same tiles 1-no variety
+const tile = {
+	"path":0, "up":2, "wall":4, "blank":6, "left":8, "right":10, "down":12, "uleft": 14, "uright":16, "wleft":18,
+	"wright":20, "lleft":22, "lright":24}
+const enemy_data = [
+	{"name":"zombie_basic","level":1,"cost":1}]
+const obs_base = preload("res://levels/obstacle_small.tscn")
+const e_1_1 = preload("res://enemies/gy_zombie_basic.tscn")
+
+#Function/s
+func create_enemies():
+	while enemy_cost > 0:
+		var i = rng.randi()%enemy_bases.size()
+		match enemy_bases[i]["name"]:
+			"zombie_basic":
+				var temp = e_1_1.instance()
+				temp.position = (enemy_pos[rng.randi()%enemy_pos.size()] - screen_offset) * 64
+				temp.SEED = rng.randi()
+				add_child(temp)
+				enemy_list.append(temp)
+				enemy_cost -= enemy_bases[i]["cost"]
+
+#===============================================================================
+#======== Dont edit past this unless you know what you're doing ================
+#===============================================================================
+
+const screen_size = 24 #size range of blank blocks
+const room_size = 13 # size of walkable room
+const border = floor((screen_size-room_size)/2)
+const screen_offset = Vector2((screen_size/2)-border,(screen_size/2)-border)
+
+var cleared = false
+var enemy_cost = 0
+var room_seed = 0
+var enemy_bases = []
+var enemy_list = []
+var obs_list = []
+var level = 1
+var rng = RandomNumberGenerator.new()
+var enemy_pos = null
+
+onready var tilemap = $TileMap
+
+func _ready():
+	set_process(false)
+	rng.seed  = room_seed
+	create_room()
+	preload_items()
+	if !cleared:
+		create_enemies()
+		set_process(true)
+
+func _process(delta):
+	var all_dead = true
+	for i in range(0, enemy_list.size()):
+		if enemy_list[i].dead:
+			enemy_list[i].queue_free()
+			enemy_list.remove(i)
+			break
+	if enemy_list.size() == 0:
+		cleared = true
+	if cleared:
+		set_process(false)
+
+func create_room():
+	for y in range(0, screen_size):
+		for x in range(0, screen_size):
+			if (y < border or y > (screen_size-border) or x < border or x > (screen_size-border)):
+				if ((y+1) == border) and wall and (x>border and x < screen_size-border):
+					tilemap.set_cellv(Vector2(x-(screen_size/2),y-(screen_size/2)),tile["wall"] + randi()%variation)
+				else:
+					tilemap.set_cellv(Vector2(x-(screen_size/2),y-(screen_size/2)),tile["blank"] + randi()%variation)
+			if (y == (screen_size-border) and x > border and x < (screen_size-border)):
+				tilemap.set_cellv(Vector2(x-(screen_size/2),y-(screen_size/2)),tile["down"] + randi()%variation)
+			if (y == border and x > border and x < (screen_size-border)):
+				tilemap.set_cellv(Vector2(x-(screen_size/2),y-(screen_size/2)),tile["up"] + randi()%variation)
+			if (x == (screen_size-border) and y > border and y < (screen_size-border)):
+				tilemap.set_cellv(Vector2(x-(screen_size/2),y-(screen_size/2)),tile["right"] + randi()%variation)
+			if (x == border and y > border and y < (screen_size-border)):
+				tilemap.set_cellv(Vector2(x-(screen_size/2),y-(screen_size/2)),tile["left"] + randi()%variation)
+			if (x == border and y == border):
+				tilemap.set_cellv(Vector2(x-(screen_size/2),y-(screen_size/2)),tile["uleft"] + randi()%variation)
+				if wall:
+					tilemap.set_cellv(Vector2(x-(screen_size/2),y-(screen_size/2)-1),tile["wleft"] + randi()%variation)
+			if (x == (screen_size-border) and y == border):
+				tilemap.set_cellv(Vector2(x-(screen_size/2),y-(screen_size/2)),tile["uright"] + randi()%variation)
+				if wall:
+					tilemap.set_cellv(Vector2(x-(screen_size/2),y-(screen_size/2)-1),tile["wright"] + randi()%variation)
+			if (x == (screen_size-border) and y == (screen_size-border)):
+				tilemap.set_cellv(Vector2(x-(screen_size/2),y-(screen_size/2)),tile["lright"] + randi()%variation)
+			if (x == border and y == (screen_size-border)):
+				tilemap.set_cellv(Vector2(x-(screen_size/2),y-(screen_size/2)),tile["lleft"] + randi()%variation)
+			if(x > border and x < (screen_size-border) and y > border and y < (screen_size-border)):
+				tilemap.set_cellv(Vector2(x-(screen_size/2),y-(screen_size/2)),tile["path"] + randi()%variation)
+
+func preload_items():
+	for i in enemy_data:
+		if i["level"] <= level:
+			enemy_bases.append(i)
+		
+func generate_obstacles(data):
+	var temp_obs
+	match data[0]:
+		"point":
+			for i in range(1,data.size()):
+				temp_obs = obs_base.instance()
+				temp_obs.position = (data[i]-screen_offset)*64
+				add_child(temp_obs)
+				obs_list.append(temp_obs)
+		"range":
+			for i in range(1,data.size()):
+				if i%2 == 1:
+					var a = data[i]
+					var b = data[i+1]
+					for x in range(a.x, b.x + 1):
+						for y in range(a.y, b.y + 1):
+							temp_obs = obs_base.instance()
+							temp_obs.position = (Vector2(x,y)-screen_offset)*64
+							add_child(temp_obs)
+							obs_list.append(temp_obs)
+	gen_enemy_pos(data)
+
+func gen_enemy_pos(data):
+	enemy_pos = []
+	for x in range(2,room_size-1):
+		for y in range(2, room_size-1):
+			if data[0] == "blank":
+				enemy_pos.append(Vector2(x,y))
+			if data[0] == "point":
+				if !(Vector2(x,y) in data):
+					enemy_pos.append(Vector2(x,y))
+			if data[0] == "range":
+				var clear = true
+				var i = 1
+				while i < data.size():
+					var r1 = data[i]
+					var r2 = data[i+1]
+					if x >= r1.x and x <= r2.x and y >= r2.y and y <= r2.y:
+						clear = false
+						break
+					i+= 2
+				if clear:
+					enemy_pos.append(Vector2(x,y))

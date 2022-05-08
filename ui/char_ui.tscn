@@ -1,0 +1,116 @@
+[gd_scene load_steps=10 format=2]
+
+[ext_resource path="res://resc/ui obj/ui_heart_4.png" type="Texture" id=1]
+[ext_resource path="res://resc/ui obj/ui_hp_bg.png" type="Texture" id=2]
+[ext_resource path="res://resc/ui obj/ui_heart_0.png" type="Texture" id=3]
+[ext_resource path="res://resc/ui obj/ui_hp_mg.png" type="Texture" id=4]
+[ext_resource path="res://resc/ui obj/ui_hp_fg.png" type="Texture" id=5]
+[ext_resource path="res://resc/ui obj/ui_skill_green.png" type="Texture" id=6]
+[ext_resource path="res://resc/ui obj/ui_skill_bg.png" type="Texture" id=7]
+[ext_resource path="res://resc/ui obj/ui_skill_fg.png" type="Texture" id=8]
+[ext_resource path="res://ui/char_ui.gd" type="Script" id=9]
+
+[node name="Node2D" type="Node2D"]
+scale = Vector2( 0.8, 0.8 )
+script = ExtResource( 9 )
+
+[node name="HP_Bar" type="TextureProgress" parent="."]
+margin_left = -132.0
+margin_top = -17.0
+margin_right = 92.0
+margin_bottom = 22.0
+texture_under = ExtResource( 2 )
+texture_over = ExtResource( 5 )
+texture_progress = ExtResource( 4 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HP_s1" type="TextureProgress" parent="."]
+margin_left = 107.0
+margin_top = -16.0
+margin_right = 147.0
+margin_bottom = 24.0
+texture_under = ExtResource( 3 )
+texture_progress = ExtResource( 1 )
+fill_mode = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HP_s2" type="TextureProgress" parent="."]
+margin_left = 151.646
+margin_top = -16.0607
+margin_right = 191.646
+margin_bottom = 23.9393
+texture_under = ExtResource( 3 )
+texture_progress = ExtResource( 1 )
+fill_mode = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="atk" type="TextureProgress" parent="."]
+margin_left = -134.061
+margin_top = 17.0607
+margin_right = -70.0607
+margin_bottom = 81.0607
+texture_under = ExtResource( 7 )
+texture_over = ExtResource( 8 )
+texture_progress = ExtResource( 6 )
+fill_mode = 4
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="atk2" type="TextureProgress" parent="."]
+margin_left = -67.5847
+margin_top = 16.545
+margin_right = -3.58466
+margin_bottom = 80.545
+texture_under = ExtResource( 7 )
+texture_over = ExtResource( 8 )
+texture_progress = ExtResource( 6 )
+fill_mode = 4
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HP_label" type="Label" parent="."]
+margin_left = -24.3134
+margin_top = -6.66176
+margin_right = 20.6866
+margin_bottom = 7.33824
+rect_pivot_offset = Vector2( -189.416, 39.2499 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_outline_modulate = Color( 1, 1, 1, 1 )
+text = "0/0"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="atk_label" type="Label" parent="."]
+margin_left = -104.813
+margin_top = 43.9867
+margin_right = -59.8133
+margin_bottom = 57.9867
+rect_pivot_offset = Vector2( -189.416, 39.2499 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_colors/font_outline_modulate = Color( 1, 1, 1, 1 )
+text = "0"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="atk2_label" type="Label" parent="."]
+margin_left = -37.6958
+margin_top = 44.148
+margin_right = 7.30423
+margin_bottom = 58.148
+rect_pivot_offset = Vector2( -189.416, 39.2499 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_colors/font_outline_modulate = Color( 1, 1, 1, 1 )
+text = "0"
+__meta__ = {
+"_edit_use_anchors_": false
+}
