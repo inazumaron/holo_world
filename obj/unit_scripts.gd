@@ -31,3 +31,10 @@ const buff = {
 	"critRate": ["value", "duration", "party", "behaviour"],
 	"critDmg": ["value", "duration", "party", "behaviour"],
 }
+
+#naming conventions for character codes:
+#Codes are 3 digits ex noel = 132
+#1st digit is branch 1-JP, 2-ID, 3-EN
+#2nd digit is gen	 gen9 - 0 ... gamers - 9, irys - 0
+#3rd digit is position alphabetically starting with 0
+# ex Flare - 130, Marine - 131, Noel - 132, Pekora - 133, Rushia - 134

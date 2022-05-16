@@ -63,6 +63,7 @@ func _process(delta):
 	var all_dead = true
 	for i in range(0, enemy_list.size()):
 		if enemy_list[i].dead:
+			BuffHandler.enemy_dead(enemy_list[i])
 			enemy_list[i].queue_free()
 			enemy_list.remove(i)
 			break

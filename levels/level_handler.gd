@@ -43,7 +43,7 @@ var door_base = preload("res://levels/door.tscn")
 var minimap_base = preload("res://ui/minimap.tscn")
 
 func _ready():
-	seed(2)
+	seed(1)
 	set_process(false)
 	if level_seed == 0:
 		level_seed = randi()
@@ -93,9 +93,11 @@ func generate_room():
 
 func gen_template(data):
 	var valid = false
-	var i = randi()%room_templates.size()
+	var i = 0
 	while !valid:
+		i = randi()%room_templates.size()
 		if i == 2:
+			print("template 2 ", data)
 			if data["up"] == -1 and data["down"] == -1:
 				valid = true
 		elif i == 3:
@@ -103,10 +105,10 @@ func gen_template(data):
 				valid = true
 		else:
 			valid = true
-		i = randi()%room_templates.size()
 	return i
 
 func change_room():
+	BuffHandler.clear_list()
 	active_room.queue_free()
 	active_room_val = path[active_room_val][door_dir]
 	generate_room()
@@ -171,17 +173,21 @@ func generate_character():
 	if char_data[0] != null:
 		character.update_data(char_data[0])
 	else:
-		character.activate(true)
+		character.activate(true)	
+	BuffHandler.add_character(character)
+	
 	if char_data[1] != null:
 		char2 = char_base.instance()
 		char2.position = char_pos_set()
 		add_child(char2)
 		char2.update_data(char_data[1])
+		BuffHandler.add_character(char2)
 	if char_data[2] != null:
 		char3 = char_base.instance()
 		char3.position = char_pos_set()
 		add_child(char3)
 		char3.update_data(char_data[2])
+		BuffHandler.add_character(char3)
 	
 func compute_stats():
 	room_count = floor(pow(level,1.5)) + 5

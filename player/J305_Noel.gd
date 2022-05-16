@@ -20,6 +20,9 @@ var SPECIAL_REGEN_TYPE = 0 #0 - auto, 1 - offensive, 2 - defensive
 var DAMAGE_ANIM_DUR = 0.2
 var ACTIVE = true			#for collab on field
 const WEAPON_PATH = "res://weapons/m_noel_mace.tscn"
+
+var can_move = true
+var can_attack = true
 #---------------------------------
 var motion = Vector2.ZERO
 var last_anim_dir = 0 #0 - left, 1 - right
@@ -28,7 +31,7 @@ var last_anim_dir = 0 #0 - left, 1 - right
 var pos_timer = 0	#update position for game
 var damage_anim_timer = 0 # damage invulnerability time
 var attack_timer = 0
-var buffs = []		#contains debuffs and buffs
+var buffs = {}		#contains debuffs and buffs
 
 var minimap_base = preload("res://ui/minimap.tscn")
 var minimap = null
@@ -47,9 +50,11 @@ func _ready():
 
 func _physics_process(delta):
 	if ACTIVE:
-		general_action()
+		if can_attack:
+			general_action()
 		
-		general_move(delta)
+		if can_move:
+			general_move(delta)
 		
 		general_timer_update(delta)
 		
@@ -130,16 +135,7 @@ func anim_update(axis):
 			$AnimatedSprite.play("idle_right")
 
 func take_damage(damage, effect):
-	print("damaged", damage)
-	if ACTIVE:
-		damage_anim_timer = DAMAGE_ANIM_DUR
-		HP -= damage
-		anim_update(Vector2.ZERO)
-		print("HP: ",HP)
-		if HP <= 0:
-			print("dead")
-			
-		ui_manipulation(0)
+	BuffHandler.damage_handler(damage, effect, buffs, self)
 
 func ui_manipulation(n):
 	#	0 - update life
@@ -177,14 +173,14 @@ func activate(x):
 		$Camera2D.current = true
 		self.visible = true
 		$CollisionShape2D.disabled = false
-		#weapon.ACTIVE = true
+		ui.visible = true
 	else:
 		ACTIVE = false
 		$Camera2D.current = false
 		self.visible = false
 		$CollisionShape2D.disabled = true
-		#weapon.ACTIVE = false
-		
+		ui.visible = false
+
 func setCamera(x):
 	$Camera2D.current = x
 
@@ -200,3 +196,10 @@ func generate_minimap(path, active_room_val):
 	minimap.loc = active_room_val
 	add_child(minimap)
 	minimap.generate_minimap()
+
+func damage(v):
+	if v > 0:
+		damage_anim_timer = DAMAGE_ANIM_DUR
+		HP -= v
+		anim_update(Vector2.ZERO)
+		ui_manipulation(0)

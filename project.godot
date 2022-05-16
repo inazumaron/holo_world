@@ -17,6 +17,7 @@ config/icon="res://resc/icon.png"
 [autoload]
 
 GameHandler="*res://obj/game_handler.gd"
+BuffHandler="*res://obj/buff_handler.gd"
 
 [input]
 

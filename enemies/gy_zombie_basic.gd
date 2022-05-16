@@ -15,13 +15,11 @@ const WANDER_DURATION = 1
 const APPEAR_DURATION = 1.2
 const CHASER = 1			# 1 - chases player, -1 - movement not affected by player, 0 - runs away from player
 
-var defense = {				#for defensive statuses, includes armor, posion immunity etc
-	"defense":0, "weight":1}
-var buffs = {}				#place all active buffs/debuffs here, should not be directly altered, as values are shared between all
+var buffs = {"defense":0, "weight":1}		#place all active buffs/debuffs here, should not be directly altered, as values are shared between all
 var buff_timers = {}
 var EFFECTS = {}			#for offensive statuses, damage bonus, inflict poison, etc
 var SEED = 0
-var hp = 3
+var HP = 3
 var anim_dir = 1 #1-right, -1 left
 var direction = 0
 var targets = []
@@ -33,8 +31,11 @@ var attack_delay_timer = -1		#-1 if not attacking, 0-check target, apply damage.
 var attack_target = null 
 var appear_timer = APPEAR_DURATION #starting animation duration
 var movement = Vector2.ZERO
-var can_move = true
+var npc_can_move = true
 var dead = false
+
+var can_move = true
+var can_attack = true
 
 var rng = RandomNumberGenerator.new()
 var dvar = true
@@ -49,89 +50,26 @@ func _process(delta):
 	if appear_timer <= 0:
 		if attack_target == null:
 			if damage_anim_timer <= 0 and attack_anim_timer <= 0:		#wont move if damaged or attacking
-				if !("knockback" in buffs ||"stun" in buffs ||"freeze" in buffs ||"sleep" in buffs ||"stuck" in buffs):
+				if can_move:
 					move(delta)
 		else:
-			if !("knockback" in buffs ||"stun" in buffs ||"freeze" in buffs ||"sleep" in buffs):
+			if can_attack:
 				attack()
 		buff_handler(delta)
 
-func buff_handler(delta):
+func buff_handler(delta):	#for buffs too complex for buff handler to deal with i.e. making them move
 	if "knockback" in buffs:
 		direction = buffs["knockback"][1]
 		if "knockback" in buff_timers:
 			apply_movement(buff_timers["knockback"])
 			anim_dir = -sgn(movement.x)
 			movement = move_and_slide(movement)
-			buff_timers["knockback"]  *= pow(0.95, defense["weight"])
+			buff_timers["knockback"]  *= pow(0.95, buffs["weight"])
 			if buff_timers["knockback"] <= 1:
 				buffs.erase("knockback")
 				buff_timers.erase("knockback")
 		else:
 			buff_timers["knockback"] = buffs["knockback"][0]
-	if "poison" in buffs:
-		if "poison" in buff_timers:
-			buff_timers["poison"] += delta
-			if floor(buff_timers["poison"]) != buff_timers["poisonP"]:
-				buff_timers["poisonP"] = floor(buff_timers["poison"])
-				take_damage(buffs["poison"][0], {})
-			if buff_timers["poison"] >= buffs["poison"][1]:
-				buffs.erase("poison")
-				buff_timers.erase("poison")
-				buff_timers.erase("poisonP")
-		else:
-			buff_timers["poison"] = 0
-			buff_timers["poisonP"] = 0
-	if "burn" in buffs:
-		if "burn" in buff_timers:
-			buff_timers["burn"] += delta
-			if floor(buff_timers["burn"]) != buff_timers["burnP"]:
-				buff_timers["burnP"] = floor(buff_timers["burn"])
-				take_damage(buffs["burn"][0], {})
-			if buff_timers["burn"] >= buffs["burn"][1]:
-				buffs.erase("burn")
-				buff_timers.erase("burn")
-				buff_timers.erase("burnP")
-		else:
-			buff_timers["burn"] = 0
-			buff_timers["burnP"] = 0
-	if "freeze" in buffs:
-		if "freeze" in buff_timers:
-			buff_timers["freeze"] += delta
-			if floor(buff_timers["freeze"]) != buff_timers["freezeP"]:
-				buff_timers["freezeP"] = floor(buff_timers["freeze"])
-				take_damage(buffs["freeze"][0], {})
-			if buff_timers["freeze"] >= buffs["freeze"][1]:
-				buffs.erase("freeze")
-				buff_timers.erase("freeze")
-				buff_timers.erase("freezeP")
-		else:
-			buff_timers["freeze"] = 0
-			buff_timers["freezeP"] = 0
-	if "stun" in buffs:
-		if "stun" in buff_timers:
-			buff_timers["stun"] += delta
-			if buff_timers["stun"] >= buffs["stun"][0]:
-				buffs.erase("stun")
-				buff_timers.erase("stun")
-		else:
-			buff_timers["stun"] = 0
-	if "sleep" in buffs:
-		if "sleep" in buff_timers:
-			buff_timers["sleep"] += delta
-			if buff_timers["sleep"] >= buffs["sleep"][0]:
-				buffs.erase("sleep")
-				buff_timers.erase("sleep")
-		else:
-			buff_timers["sleep"] = 0
-	if "stuck" in buffs:
-		if "stuck" in buff_timers:
-			buff_timers["stuck"] += delta
-			if buff_timers["stuck"] >= buffs["stuck"][0]:
-				buffs.erase("stuck")
-				buff_timers.erase("stuck")
-		else:
-			buff_timers["stuck"] = 0
 
 func timer_handler(delta):
 	if appear_timer>0:
@@ -146,7 +84,7 @@ func timer_handler(delta):
 		move_timer -= delta
 	if move_timer <= 0:
 		move_timer = WANDER_DURATION
-		can_move = !can_move
+		npc_can_move = !npc_can_move
 	if attack_delay_timer > 0 and attack_delay_timer != -1:
 		attack_delay_timer -= delta
 		if attack_delay_timer <= 0:
@@ -158,7 +96,7 @@ func move(delta):
 	if targets.size() > 0:
 		chase()
 		play_animation("walk")
-	elif can_move:
+	elif npc_can_move:
 		wander()
 		play_animation("walk")
 	else:
@@ -196,18 +134,16 @@ func attack():
 		play_animation("attack")
 
 func take_damage(damage, effect):
-	if damage_anim_timer <= 0 and appear_timer <= 0:
-		if "sleep" in buffs:
-			buffs.erase("sleep")
+	BuffHandler.damage_handler(damage, effect, buffs, self)
+
+func damage(v):
+	if v > 0:
 		damage_anim_timer = DAMAGE_ANIM_DUR
-		hp -= damage
+		HP -= v
 		play_animation("damage")
-		var keys = effect.keys()
-		for i in keys:
-			buffs[i] = effect[i]
-	if hp <= 0:
-		dead = true
-		
+		if HP <= 0:
+			dead = true
+
 func play_animation(x):
 	#priority: attack - damaged - walk
 	if attack_anim_timer > 0:

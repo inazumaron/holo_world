@@ -29,6 +29,9 @@ var pos = Vector2(0, MAX_LEVELS-1)
 var next_step = "none"
 var player_pos = Vector2.ZERO
 
+func set_next_step(x):
+	next_step = x
+
 func generate_worlds(base):
 	if len(worlds) == 0:
 		randomize()
@@ -45,8 +48,11 @@ func generate_worlds(base):
 			worlds.append(temp)
 	return worlds
 	
+func load_level(val):
+	BuffHandler.set_process(true)
+	get_tree().change_scene("res://levels/level_handler.tscn")
+
 func move():
-	print(pos)
 	if next_step == "left":
 		pos.y -= 1
 		pos.x = (MAX_LEVELS + int(pos.x - 1)) % MAX_LEVELS

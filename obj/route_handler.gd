@@ -28,14 +28,17 @@ func _ready():
 			row_list.append(map_row[int(cell_index_start+cell) % GameHandler.MAX_LEVELS])
 		visible_cards.append(row_list)
 	display_cards()
+	set_process(true)
 	
 func _process(delta):
 	for i in active_cards:
 		if i.selected:
-			var world_val = i.value
+			GameHandler.set_next_step(i.next_step)
 			for card in all_cards:
 				card.queue_free()
-			#change to map scene
+			all_cards.clear()
+			active_cards.clear()
+			GameHandler.load_level(i.value)
 
 func switch_texture(n):
 	if n == 0:
