@@ -29,6 +29,13 @@ var pos = Vector2(0, MAX_LEVELS-1)
 var next_step = "none"
 var player_pos = Vector2.ZERO
 
+func change_handler(x,y):
+	x.queue_free()
+	if y == "charSel":
+		get_tree().change_scene("res://obj/charSel_handler.tscn")
+	if y == "route":
+		get_tree().change_scene("res://obj/route_handler.tscn")
+
 func set_next_step(x):
 	next_step = x
 
