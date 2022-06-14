@@ -145,7 +145,7 @@ func gen_enemy_pos(data):
 				while i < data.size():
 					var r1 = data[i]
 					var r2 = data[i+1]
-					if x >= r1.x and x <= r2.x and y >= r2.y and y <= r2.y:
+					if x >= r1.x and x <= r2.x and y >= r1.y and y <= r2.y:
 						clear = false
 						break
 					i+= 2

@@ -38,7 +38,8 @@ func _process(delta):
 				card.queue_free()
 			all_cards.clear()
 			active_cards.clear()
-			GameHandler.load_level(i.value)
+			GameHandler.set_level_val(i.value)
+			GameHandler.change_handler(self, "level")
 
 func switch_texture(n):
 	if n == 0:

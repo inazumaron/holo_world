@@ -57,6 +57,13 @@ func _process(delta):
 				attack()
 		buff_handler(delta)
 
+func sanity_check():		#for bug handling
+	#Out of bounds
+	var temp = GameHandler.room_radius
+	if position.x < -temp or position.x > temp or position.y < -temp or position.y > temp:
+		dead = true
+	#Stuck in obstacle
+
 func buff_handler(delta):	#for buffs too complex for buff handler to deal with i.e. making them move
 	if "knockback" in buffs:
 		direction = buffs["knockback"][1]

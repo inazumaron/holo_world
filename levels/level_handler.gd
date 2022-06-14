@@ -43,7 +43,7 @@ var door_base = preload("res://levels/door.tscn")
 var minimap_base = preload("res://ui/minimap.tscn")
 
 func _ready():
-	seed(1)
+	seed(0)
 	set_process(false)
 	if level_seed == 0:
 		level_seed = randi()
@@ -108,23 +108,28 @@ func gen_template(data):
 	return i
 
 func change_room():
-	BuffHandler.clear_list()
-	active_room.queue_free()
-	active_room_val = path[active_room_val][door_dir]
-	generate_room()
-	print(active_room_val)
+	if door_dir != "":
+		BuffHandler.clear_list()
+		active_room.queue_free()
+		active_room_val = path[active_room_val][door_dir]
+		generate_room()
 	
-	char_data[0] = character.send_data()
-	character.queue_free()
-	if char2 != null:
-		char_data[1] = char2.send_data()
-		char2.queue_free()
-	if char3 != null:
-		char_data[2] = char3.send_data()
-		char3.queue_free()
-	generate_character()
-	character.generate_minimap(path, active_room_val)
-
+		char_data[0] = character.send_data()
+		character.queue_free()
+		if char2 != null:
+			char_data[1] = char2.send_data()
+			char2.queue_free()
+		if char3 != null:
+			char_data[2] = char3.send_data()
+			char3.queue_free()
+		generate_character()
+		character.generate_minimap(path, active_room_val)
+	else:
+		next_level()
+		
+func next_level():
+	GameHandler.change_handler(self,"route")
+		
 func generate_doors():
 	if path[active_room_val]["up"] != -1:
 		var temp_door = door_base.instance()
@@ -148,6 +153,12 @@ func generate_doors():
 		var temp_door = door_base.instance()
 		temp_door.dir = "left"
 		temp_door.position = Vector2(-room_radius, 0)
+		add_child(temp_door)
+		door_list.append(temp_door)
+	if path[active_room_val]["boss_room"]:
+		var temp_door = door_base.instance()
+		temp_door.dir = ""
+		temp_door.position = Vector2.ZERO
 		add_child(temp_door)
 		door_list.append(temp_door)
 
@@ -192,7 +203,7 @@ func generate_character():
 func compute_stats():
 	room_count = floor(pow(level,1.5)) + 5
 	max_level_size = ceil(room_count/2)+1
-	enemy_budget = 10*floor(pow(level,1.5))
+	enemy_budget = 2*floor(pow(level,1.5))
 
 func generate_path(r_count, max_size, l_seed): #room count and max size of map (nxn)
 	rand_seed(l_seed)
@@ -223,4 +234,8 @@ func generate_path(r_count, max_size, l_seed): #room count and max size of map (
 		"down":temp_path.find(Vector2(cell.x, cell.y+1)), 
 		"cleared":false, "r_seed":randi(), "coord":cell, "template":0}
 		temp_cell["template"] = gen_template(temp_cell)
+		if i == temp_path.size()-1:
+			temp_cell["boss_room"] = true
+		else:
+			temp_cell["boss_room"] = false
 		path.append(temp_cell)

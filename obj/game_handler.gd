@@ -22,6 +22,7 @@ var level_list = []
 
 const MAX_LEVELS = 10		#how many levels 
 const WORLD_NUM = 5		#amount of available worlds
+const room_radius = 408
 var curr_world_id = "none"
 
 var worlds = []
@@ -29,12 +30,18 @@ var pos = Vector2(0, MAX_LEVELS-1)
 var next_step = "none"
 var player_pos = Vector2.ZERO
 
+var level_val = ""
+
 func change_handler(x,y):
 	x.queue_free()
+	BuffHandler.set_process(false)
 	if y == "charSel":
 		get_tree().change_scene("res://obj/charSel_handler.tscn")
 	if y == "route":
 		get_tree().change_scene("res://obj/route_handler.tscn")
+	if y == "level":
+		BuffHandler.set_process(true)
+		get_tree().change_scene("res://levels/level_handler.tscn")
 
 func set_next_step(x):
 	next_step = x
@@ -55,9 +62,8 @@ func generate_worlds(base):
 			worlds.append(temp)
 	return worlds
 	
-func load_level(val):
-	BuffHandler.set_process(true)
-	get_tree().change_scene("res://levels/level_handler.tscn")
+func set_level_val(val):
+	level_val = val
 
 func move():
 	if next_step == "left":
@@ -122,7 +128,6 @@ func update_char_stat(n, stats):
 
 func next_level(char_data):
 	level += 1
-	#save_data(char_data)
 
 func save_data(data):
 	var file = File.new()
