@@ -37,10 +37,13 @@ var char_data = [null, null, null]		#for changing rooms/levels
 var door_list = []
 var minimap = null
 
-var char_base = preload("res://player/J305_Noel.tscn")
+var char_base = preload("res://player/132_Noel.tscn")
 var room_base = preload(room_path)
 var door_base = preload("res://levels/door.tscn")
 var minimap_base = preload("res://ui/minimap.tscn")
+var paused = false
+
+var dialogue_playing = false
 
 func _ready():
 	seed(0)
@@ -50,6 +53,7 @@ func _ready():
 	compute_stats()
 	if path == []:
 		generate_path(room_count, max_level_size, level_seed)
+	GameHandler.set_world_id(self)
 	
 	set_process(true)
 
@@ -81,6 +85,19 @@ func _process(delta):
 			for i in range(0, door_list.size()):
 				door_list[i].queue_free()
 			door_list.clear()
+			
+	if Input.is_action_just_pressed("ui_accept"):
+		if paused:
+			paused = false
+			unpause()
+		else:
+			paused = true
+			pause()
+			
+	if dialogue_playing:
+		if !active_room.dialogue_playing:
+			unpause()
+			dialogue_playing = false
 
 func generate_room():
 	active_room = room_base.instance()
@@ -88,7 +105,7 @@ func generate_room():
 	active_room.room_seed = level_seed - room_count + active_room_val
 	active_room.cleared = path[active_room_val]["cleared"]
 	active_room.generate_obstacles(room_templates[path[active_room_val]["template"]])
-	print("template: ",path[active_room_val]["template"])
+	
 	add_child(active_room)
 
 func gen_template(data):
@@ -124,10 +141,23 @@ func change_room():
 			char3.queue_free()
 		generate_character()
 		character.generate_minimap(path, active_room_val)
+		
+		if path[active_room_val]["boss_room"]:
+			dialogue()
 	else:
 		next_level()
 		
 func next_level():
+	BuffHandler.clear_list()
+	active_room.queue_free()
+	char_data[0] = character.send_data()
+	character.queue_free()
+	if char2 != null:
+		char_data[1] = char2.send_data()
+		char2.queue_free()
+	if char3 != null:
+		char_data[2] = char3.send_data()
+		char3.queue_free()
 	GameHandler.change_handler(self,"route")
 		
 func generate_doors():
@@ -239,3 +269,27 @@ func generate_path(r_count, max_size, l_seed): #room count and max size of map (
 		else:
 			temp_cell["boss_room"] = false
 		path.append(temp_cell)
+
+func dialogue():
+	pause()
+	active_room.dialogue_playing = true
+	active_room.play_dialogue()
+	active_room.textbox.rect_position = character.position + Vector2(-200, 200)
+	dialogue_playing = true
+
+func pause():
+	active_room.pause()
+	character.ACTIVE = false
+	print("paused")
+
+func unpause():
+	active_room.unpause()
+	character.ACTIVE = true
+	print("resumed")
+
+func update_player_items(x,y,l1,l2):
+	character.ui_item_update_anim(x,y,l1,l2)
+	if char2 != null:
+		char2.ui_item_update_anim(x,y,l1,l2)
+	if char3 != null:
+		char3.ui_item_update_anim(x,y,l1,l2)

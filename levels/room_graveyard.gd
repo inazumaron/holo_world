@@ -16,6 +16,9 @@ const enemy_data = [
 const obs_base = preload("res://levels/obstacle_small.tscn")
 const e_1_1 = preload("res://enemies/gy_zombie_basic.tscn")
 
+const boss_dialogue = [["Nee...", "What do you think you're doing here", "You wanna die?"]]
+const boss_base = ["I see", "You want to take everything away from me huh", "Id like to see you try"]
+
 #Function/s
 func create_enemies():
 	while enemy_cost > 0:
@@ -38,6 +41,13 @@ const room_size = 13 # size of walkable room
 const border = floor((screen_size-room_size)/2)
 const screen_offset = Vector2((screen_size/2)-border,(screen_size/2)-border)
 
+var dialogue_playing = false
+var dialogue_page = 0
+var dialogue_text_len = 0
+var dialogue_text_max = 0
+var dialogue_script = boss_dialogue[0]
+var next_dialogue_click = false				#enable clicking to go to next dialogue page
+
 var cleared = false
 var enemy_cost = 0
 var room_seed = 0
@@ -49,6 +59,7 @@ var rng = RandomNumberGenerator.new()
 var enemy_pos = null
 
 onready var tilemap = $TileMap
+onready var textbox = $TextBox/data
 
 func _ready():
 	set_process(false)
@@ -58,7 +69,10 @@ func _ready():
 	if !cleared:
 		create_enemies()
 		set_process(true)
-
+	tilemap.z_index = 0
+	$TextBox.z_index = 2
+	print(BuffHandler.char_nodes)
+	
 func _process(delta):
 	var all_dead = true
 	for i in range(0, enemy_list.size()):
@@ -71,6 +85,12 @@ func _process(delta):
 		cleared = true
 	if cleared:
 		set_process(false)
+		
+	if next_dialogue_click and dialogue_playing:
+		if Input.is_action_just_pressed("mouse_click"):
+			next_dialogue_click = false
+			dialogue_page += 1
+			play_dialogue()
 
 func create_room():
 	for y in range(0, screen_size):
@@ -115,6 +135,7 @@ func generate_obstacles(data):
 			for i in range(1,data.size()):
 				temp_obs = obs_base.instance()
 				temp_obs.position = (data[i]-screen_offset)*64
+				temp_obs.z_index = 1
 				add_child(temp_obs)
 				obs_list.append(temp_obs)
 		"range":
@@ -126,6 +147,7 @@ func generate_obstacles(data):
 						for y in range(a.y, b.y + 1):
 							temp_obs = obs_base.instance()
 							temp_obs.position = (Vector2(x,y)-screen_offset)*64
+							temp_obs.z_index = 1
 							add_child(temp_obs)
 							obs_list.append(temp_obs)
 	gen_enemy_pos(data)
@@ -151,3 +173,34 @@ func gen_enemy_pos(data):
 					i+= 2
 				if clear:
 					enemy_pos.append(Vector2(x,y))
+
+func pause():
+	BuffHandler.set_process(false)
+	for e in enemy_list:
+		e.set_process(false)
+
+func unpause():
+	BuffHandler.set_process(true)
+	for e in enemy_list:
+		e.set_process(true)
+
+func play_dialogue():
+	if dialogue_page < dialogue_script.size():
+		textbox.set_bbcode(dialogue_script[dialogue_page])
+		textbox.set_visible_characters(0)
+		dialogue_text_max = dialogue_script[dialogue_page].length()
+		dialogue_text_len = 1
+		$Timer.start(0)
+	else:
+		textbox.set_bbcode("")
+		dialogue_playing = false
+
+func play_dialogue_text():
+	textbox.set_visible_characters(dialogue_text_len)
+	dialogue_text_len += 1
+	if dialogue_text_len > dialogue_text_max:
+		$Timer.stop()
+		next_dialogue_click = true
+
+func _on_Timer_timeout():
+	play_dialogue_text()

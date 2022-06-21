@@ -5,7 +5,7 @@ var MAX_SPEED = 300
 var ACCELERATION = 1000
 var POS_UPDATE_TIMER = .1
 var MAX_HP = 10
-var HP = 10
+var HP = 1
 var DEF = 0 #0 by default, reduces damage by a flat amount. 
 
 var ATTACK_COOLDOWN = 1
@@ -13,13 +13,14 @@ var ATTACK_STACK_COUNT = 2
 var ATTACK_DAMAGE = 1
 var ATTACK_EFFECTS = []
 
-var SPECIAL_CODE = 0
+var SPECIAL_CODE = "c132_shield"
 var SPECIAL_COOLDOWN = 1
 var SPECIAL_REGEN_TYPE = 0 #0 - auto, 1 - offensive, 2 - defensive
 
 var DAMAGE_ANIM_DUR = 0.2
 var ACTIVE = true			#for collab on field
 const WEAPON_PATH = "res://weapons/m_noel_mace.tscn"
+const CODE = 132
 
 var can_move = true
 var can_attack = true
@@ -37,6 +38,8 @@ var minimap_base = preload("res://ui/minimap.tscn")
 var minimap = null
 var ui_base = preload("res://ui/char_ui.tscn")
 var ui = null
+var item_base = preload("res://ui/item_ui.tscn")
+var item = null
 
 var weapon_base = preload(WEAPON_PATH)
 var weapon = weapon_base.instance()
@@ -85,7 +88,8 @@ func general_action():
 		attack()
 		
 	if Input.is_action_just_pressed("mouse_click_r"):
-		pass
+		if SPECIAL_CODE == "c132_shield":
+			SkillHandler.c132_shield(self,buffs)
 
 func get_input_axis():
 	var axis = Vector2.ZERO
@@ -188,6 +192,9 @@ func generate_ui():
 	ui = ui_base.instance()
 	ui.position = Vector2(-380,-260)
 	add_child(ui)
+	item = item_base.instance()
+	item.position = Vector2(-420,260)
+	add_child(item)
 	ui_manipulation(0)
 
 func generate_minimap(path, active_room_val):
@@ -203,3 +210,7 @@ func damage(v):
 		HP -= v
 		anim_update(Vector2.ZERO)
 		ui_manipulation(0)
+
+func ui_item_update_anim(x,y,l1,l2):
+	item.change(x,y)
+	item.changeLabel(l1,l2)

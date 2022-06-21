@@ -41,11 +41,10 @@ func change_handler(x,y):
 		get_tree().change_scene("res://obj/route_handler.tscn")
 	if y == "level":
 		BuffHandler.set_process(true)
+		ItemHandler.set_process(true)
 		get_tree().change_scene("res://levels/level_handler.tscn")
 
-func set_next_step(x):
-	next_step = x
-
+#============================================  route handling
 func generate_worlds(base):
 	if len(worlds) == 0:
 		randomize()
@@ -62,9 +61,6 @@ func generate_worlds(base):
 			worlds.append(temp)
 	return worlds
 	
-func set_level_val(val):
-	level_val = val
-
 func move():
 	if next_step == "left":
 		pos.y -= 1
@@ -77,8 +73,10 @@ func move():
 	print("moved ",next_step)
 	print(pos)
 	next_step = "none"
+	level += 1
 	return pos
 
+#============================================  level/character handling
 func return_player_path(code):
 	if code == 0:
 		code = main_char
@@ -88,8 +86,7 @@ func return_player_path(code):
 	elif code == 131:	#marine
 		return ""
 	elif code == 132:	#noel
-		pass
-		#return preload("res://PlayerEntity/char_Noel.tscn")
+		return preload("res://player/132_Noel.tscn")
 	elif code == 133:	#pekora
 		pass
 		#return preload("res://PlayerEntity/char_Pekora.tscn")
@@ -109,15 +106,7 @@ func is_char_blank(n):
 		if co_char_2_stats["CHAR_CODE"] == 0:
 			return true
 		return false
-		
-func get_char_stat(n):
-	if n == main_char:
-		return main_char_stats
-	if n == co_char_1:
-		return co_char_1_stats
-	if n == co_char_2:
-		return co_char_2_stats
-		
+
 func update_char_stat(n, stats):
 	if n == main_char:
 		main_char_stats = stats
@@ -125,9 +114,6 @@ func update_char_stat(n, stats):
 		co_char_1_stats = stats
 	if n == co_char_2:
 		co_char_2_stats = stats
-
-func next_level(char_data):
-	level += 1
 
 func save_data(data):
 	var file = File.new()
@@ -194,7 +180,33 @@ func switch_char(code):
 	curr_world_id.switch_active_char(active_character)
 	return return_val
 
-func update_item(x,y):
-	item1 = x
-	item2 = y
-	curr_world_id.update_player_items()
+func update_item(x,y,l1,l2):
+	#x and y contains strings, with the name of the new item
+	curr_world_id.update_player_items(x,y,l1,l2)
+
+#============================================  get var funcitons
+func get_char_stat(n):
+	if n == main_char:
+		return main_char_stats
+	if n == co_char_1:
+		return co_char_1_stats
+	if n == co_char_2:
+		return co_char_2_stats
+
+func get_active_char(): #Returns active character code
+	if active_character == 0:
+		return main_char
+	if active_character == 1:
+		return co_char_1
+	if active_character == 2:
+		return co_char_2
+
+#============================================  set var functions
+func set_next_step(x):
+	next_step = x
+
+func set_level_val(val):
+	level_val = val
+	
+func set_world_id(id):
+	curr_world_id = id

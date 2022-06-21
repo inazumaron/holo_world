@@ -807,3 +807,16 @@ script = ExtResource( 2 )
 [node name="TileMap" type="TileMap" parent="."]
 tile_set = SubResource( 33 )
 format = 1
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.2
+
+[node name="TextBox" type="Node2D" parent="."]
+
+[node name="data" type="RichTextLabel" parent="TextBox"]
+margin_left = 24.0
+margin_top = 104.0
+margin_right = 546.0
+margin_bottom = 202.0
+
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

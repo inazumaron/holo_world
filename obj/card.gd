@@ -15,7 +15,6 @@ func _ready():
 
 func _process(delta):
 	if Input.is_action_pressed("mouse_click") and !selected:
-		print("clicked "+str(value))
 		selected = true
 
 func _on_Area2D_mouse_entered():

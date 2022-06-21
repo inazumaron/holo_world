@@ -38,7 +38,24 @@ func damage_handler(damage, effects, buffs, source):
 		dam = damage - buffs["defense"]
 		
 	if dam > 0:
-		source.damage(dam)
+		if "shield" in buffs:#"shield": ["stack", "duration", "party", "behaviour"],
+			buffs["shield"][0] -= 1
+			if buffs["shield"][0] <= 0:
+				buffs.erase("shield")
+				if "shield_sprite" in buffs:
+					buffs["shield_sprite"].queue_free()
+					buffs.erase("shield_sprite")
+			elif "shield_sprite" in buffs:
+				var temp = buffs["shield_sprite"]
+				if temp.skill_origin == "c132_shield":
+					if buffs["shield"][0] >= 3:
+						buffs["shield_sprite"].play("n_shield_0")
+					elif buffs["shield"][0] == 2:
+						buffs["shield_sprite"].play("n_shield_1")
+					elif buffs["shield"][0] == 1:
+						buffs["shield_sprite"].play("n_shield_2")
+		else:
+			source.damage(dam)
 	else:
 		source.damage(0)
 
@@ -69,6 +86,14 @@ func stat_update(source):
 		source.can_attack = false
 	else:
 		source.can_attack = true
+		
+	if "heal" in effects:
+		if effects["heal"][1]:	#party heal
+			pass
+		else:
+			source.HP = min(source.HP+effects["heal"][0], source.MAX_HP)
+		source.ui_manipulation(0)
+		effects.erase("heal")
 
 func is_player(id):
 	for i in char_nodes:
@@ -102,3 +127,11 @@ func enemy_dead(src):
 func clear_list():
 	char_nodes.clear()
 	enemy_nodes.clear()
+
+#Add buff to main character, usually from item usage
+func add_buff(buff):
+	#Get target character, will only add, effects will be applied with sec timer
+	for i in char_nodes:
+		if i["node"].CODE == GameHandler.get_active_char():
+			for b in buff:
+				i["buffs"][b] = buff[b]

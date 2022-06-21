@@ -14,6 +14,7 @@ const DAMAGE_ANIM_DUR = 0.2
 const WANDER_DURATION = 1
 const APPEAR_DURATION = 1.2
 const CHASER = 1			# 1 - chases player, -1 - movement not affected by player, 0 - runs away from player
+const MAX_HP = 3
 
 var buffs = {"defense":0, "weight":1}		#place all active buffs/debuffs here, should not be directly altered, as values are shared between all
 var buff_timers = {}
@@ -43,9 +44,12 @@ var dvar = true
 func _ready():
 	rng.seed = SEED
 	add_to_group("enemy")
+	$AnimatedSprite.speed_scale = 0
 	play_animation("appear")
 
 func _process(delta):
+	if $AnimatedSprite.speed_scale == 0:
+		$AnimatedSprite.speed_scale = 1
 	timer_handler(delta)
 	if appear_timer <= 0:
 		if attack_target == null:
