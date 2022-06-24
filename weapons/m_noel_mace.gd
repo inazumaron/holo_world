@@ -51,5 +51,5 @@ func _on_Area2D_body_entered(body):
 		EFFECTS["knockback"][0] = EFFECT_VAL["knockback"]
 		EFFECTS["knockback"][1] = rotation
 		self.connect("EntityHit",body,"take_damage")
-		emit_signal("EntityHit",DAMAGE, EFFECTS)
+		emit_signal("EntityHit",DAMAGE, {"name":"noel mace", "buffs":EFFECTS})
 		self.disconnect("EntityHit",body,"take_damage")

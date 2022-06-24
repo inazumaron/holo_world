@@ -161,9 +161,11 @@ func activate_item(x):
 
 func e_buff(x):
 	if x:
-		BuffHandler.add_buff(item2["effect_details"])
+		var temp_buff = {"name": item2["name"], "buffs": item2["effect_details"]}
+		BuffHandler.add_buff(temp_buff)
 	else:
-		BuffHandler.add_buff(item1["effect_details"])
+		var temp_buff = {"name": item1["name"], "buffs": item1["effect_details"]}
+		BuffHandler.add_buff(temp_buff)
 	
 func e_recruit(x):
 	pass
@@ -178,6 +180,7 @@ func update_items():
 	if item2["type"] == "Stack":
 		labels[1] = "x"+str(item2["stack_count"])
 	GameHandler.update_item(item1["name"], item2["name"], labels[0], labels[1])
+
 #Item idea dump
 #	Mic					-	passive, doubles voice related attacks/skills effects and range
 #	Rabbits foot		-	passive, improves move speed, increases luck

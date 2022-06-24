@@ -229,6 +229,8 @@ func generate_character():
 		add_child(char3)
 		char3.update_data(char_data[2])
 		BuffHandler.add_character(char3)
+		
+	ItemHandler.update_items()
 	
 func compute_stats():
 	room_count = floor(pow(level,1.5)) + 5

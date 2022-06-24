@@ -1,6 +1,9 @@
 extends Node
 #This script will contain miscellaneous information, or complex computations
 
+#buff new structure to accomodate multiple buffs with same effect stacking
+#buff = {name: string, buffs: {  buffs place here  }
+
 #Debuff reference
 const debuff = { 
 	#stun, sleep, freeze, stuck keeps player from switching

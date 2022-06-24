@@ -25,7 +25,8 @@ const CODE = 132
 var can_move = true
 var can_attack = true
 #---------------------------------
-var motion = Vector2.ZERO
+var movement = Vector2.ZERO
+var anim_dir = 1 #1-right, -1 left
 var last_anim_dir = 0 #0 - left, 1 - right
 
 #------------------------ Timers
@@ -71,7 +72,7 @@ func general_move(delta):
 		apply_friction(ACCELERATION*delta)
 	else:
 		apply_movement(axis*ACCELERATION*delta)
-	motion = move_and_slide(motion)
+	movement = move_and_slide(movement)
 
 func general_timer_update(delta):
 	if damage_anim_timer > 0:
@@ -99,16 +100,16 @@ func get_input_axis():
 	return axis.normalized()
 
 func apply_friction(amount):
-	if motion.length() > amount:
-		motion -= motion.normalized() * amount
+	if movement.length() > amount:
+		movement -= movement.normalized() * amount
 	else:
-		motion = Vector2.ZERO
-	return motion
+		movement = Vector2.ZERO
+	return movement
 
 func apply_movement(acceleration):
-	motion += acceleration
-	motion = motion.clamped(MAX_SPEED)
-	return motion
+	movement += acceleration
+	movement = movement.clamped(MAX_SPEED)
+	return movement
 
 func attack():
 	if attack_timer >= 1:
@@ -214,3 +215,8 @@ func damage(v):
 func ui_item_update_anim(x,y,l1,l2):
 	item.change(x,y)
 	item.changeLabel(l1,l2)
+
+func sgn(x):
+	if x>0:
+		return 1
+	return -1

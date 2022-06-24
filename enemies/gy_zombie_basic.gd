@@ -16,7 +16,7 @@ const APPEAR_DURATION = 1.2
 const CHASER = 1			# 1 - chases player, -1 - movement not affected by player, 0 - runs away from player
 const MAX_HP = 3
 
-var buffs = {"defense":0, "weight":1}		#place all active buffs/debuffs here, should not be directly altered, as values are shared between all
+var buffs = {"passive":{"defense":0, "weight":1}}		#place all active buffs/debuffs here, should not be directly altered, as values are shared between all
 var buff_timers = {}
 var EFFECTS = {}			#for offensive statuses, damage bonus, inflict poison, etc
 var SEED = 0
@@ -59,7 +59,6 @@ func _process(delta):
 		else:
 			if can_attack:
 				attack()
-		buff_handler(delta)
 
 func sanity_check():		#for bug handling
 	#Out of bounds
@@ -67,20 +66,6 @@ func sanity_check():		#for bug handling
 	if position.x < -temp or position.x > temp or position.y < -temp or position.y > temp:
 		dead = true
 	#Stuck in obstacle
-
-func buff_handler(delta):	#for buffs too complex for buff handler to deal with i.e. making them move
-	if "knockback" in buffs:
-		direction = buffs["knockback"][1]
-		if "knockback" in buff_timers:
-			apply_movement(buff_timers["knockback"])
-			anim_dir = -sgn(movement.x)
-			movement = move_and_slide(movement)
-			buff_timers["knockback"]  *= pow(0.95, buffs["weight"])
-			if buff_timers["knockback"] <= 1:
-				buffs.erase("knockback")
-				buff_timers.erase("knockback")
-		else:
-			buff_timers["knockback"] = buffs["knockback"][0]
 
 func timer_handler(delta):
 	if appear_timer>0:
