@@ -58,3 +58,6 @@ const boss_level = {
 	#9		-	7 + 0.5 enemy budget
 	#10		-	same as main character, 7 + 2 enemy budget 
 }
+
+#Bugs found
+# - dialogue repeates even when cleared

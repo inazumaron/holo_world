@@ -6,17 +6,18 @@ const ACCELERATION = 1000
 const MAX_SPEED = 100
 const COST = 0.5
 const TO_PLAYER = true
+const ATTACK_DAMAGE = 1
 const ATTACK_COOLDOWN = 1
 const ATTACK_DURATION = 0.5
 const ATTACK_DELAY = 0.5	#delay for attack damage application once attack animation starts
-const DAMAGE = 1
 const DAMAGE_ANIM_DUR = 0.2
 const WANDER_DURATION = 1
 const APPEAR_DURATION = 1.2
 const CHASER = 1			# 1 - chases player, -1 - movement not affected by player, 0 - runs away from player
 const MAX_HP = 3
+const DEF = 0
 
-var buffs = {"passive":{"defense":0, "weight":1}}		#place all active buffs/debuffs here, should not be directly altered, as values are shared between all
+var buffs = {"passive":{"weight":1}}		#place all active buffs/debuffs here, should not be directly altered, as values are shared between all
 var buff_timers = {}
 var EFFECTS = {}			#for offensive statuses, damage bonus, inflict poison, etc
 var SEED = 0
@@ -40,7 +41,27 @@ var can_attack = true
 
 var rng = RandomNumberGenerator.new()
 var dvar = true
-# Called when the node enters the scene tree for the first time.
+var multipliers = {
+	"MAX_SPEED":1,
+	"MAX_HP":1,
+	"HP":1,
+	"DEF":1,
+	"ATTACK_COOLDOWN":1,
+	"ATTACK_STACK_COUNT":1,
+	"ATTACK_DAMAGE":1,
+	"SPECIAL_COOLDOWN":1
+}	#For buffs effects, in the format "stat name": float multiplier
+var offsets = {
+	"MAX_SPEED":1,
+	"MAX_HP":1,
+	"HP":1,
+	"DEF":1,
+	"ATTACK_COOLDOWN":1,
+	"ATTACK_STACK_COUNT":1,
+	"ATTACK_DAMAGE":1,
+	"SPECIAL_COOLDOWN":1
+}	#For buffs adding flat increase
+
 func _ready():
 	rng.seed = SEED
 	add_to_group("enemy")
@@ -85,7 +106,7 @@ func timer_handler(delta):
 		attack_delay_timer -= delta
 		if attack_delay_timer <= 0:
 			if attack_target != null:
-				attack_target.take_damage(DAMAGE,EFFECTS)
+				attack_target.take_damage(ATTACK_DAMAGE,EFFECTS)
 			attack_delay_timer = -1
 
 func move(delta):

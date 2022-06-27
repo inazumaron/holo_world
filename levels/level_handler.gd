@@ -37,6 +37,10 @@ var char_data = [null, null, null]		#for changing rooms/levels
 var door_list = []
 var minimap = null
 
+var prev_char
+var prev_char2
+var prev_char3
+
 var char_base = preload("res://player/132_Noel.tscn")
 var room_base = preload(room_path)
 var door_base = preload("res://levels/door.tscn")
@@ -132,17 +136,28 @@ func change_room():
 		generate_room()
 	
 		char_data[0] = character.send_data()
+		prev_char = character
 		character.queue_free()
 		if char2 != null:
 			char_data[1] = char2.send_data()
+			prev_char2 = char2
 			char2.queue_free()
 		if char3 != null:
 			char_data[2] = char3.send_data()
+			prev_char3 = char3
 			char3.queue_free()
 		generate_character()
 		character.generate_minimap(path, active_room_val)
 		
-		if path[active_room_val]["boss_room"]:
+		BuffHandler.save_sprites()
+		BuffHandler.change_room(prev_char, character)
+		if char2 != null:
+			BuffHandler.change_room(prev_char2, char2)
+		if char3 != null:
+			BuffHandler.change_room(prev_char3, char3)
+		BuffHandler.load_sprites()
+		
+		if path[active_room_val]["boss_room"] and !path[active_room_val]["cleared"]:
 			dialogue()
 	else:
 		next_level()

@@ -8,7 +8,20 @@ var realtime_buffs = []
 #data format: {'node':string, 'type':string, 'details':{}}
 #type: "knockback", etc #to add
 
+var temp_buffs = []
+#data format: {'node':string, 'details':{'stat': string, 'offsets': float, 'multiplier': float}, 'applied': bool, 'timer': float
+#				'party': bool, 'behaviour': string}
+#these are for buffs that affect multipliers and offsets, aka applied once and then removed when done
+
+var reapply = []
+#data format: {node: string, buff_path: [string, string ...], sprite_animation: string}
+#for data with sprites thats not temp buff, mainly for reapplying sprites
+
+#sec timer deals with buffs that is applied every second, i.e. poison, DoT stuff, HoT
+
 var timers = {'sec':0}
+
+const buff_spr_base = preload("res://obj/buff_effect.tscn")
 
 func _ready():
 	set_process(false)
@@ -19,8 +32,12 @@ func _process(delta):
 	else:
 		timers["sec"] = 1
 		sec_timer()
+	
 	if realtime_buffs.size() > 0:
-		realtime_handler()
+		realtime_handler(delta)
+	
+	if temp_buffs.size() > 0:
+		temp_buff_handler(delta)
 
 func sec_timer():
 	var src
@@ -28,15 +45,17 @@ func sec_timer():
 	for i in (char_nodes + enemy_nodes):
 		src = i['node']
 		buffs = i['buffs']
-		#if "poison" in buffs:
-		#	src.damage(buffs["poison"][0])
-		#	buffs["poison"][1] -= 1
-		#	if buffs["poison"][1] <= 0:
-		#		buffs.erase("poison")
-		#		src.buffs = buffs
+		var temp = find_buff(buffs,"poison")
+		if temp.size() > 0:
+			for j in temp:
+				src.damage(buffs[j]["poison"][0])
+				buffs[j]["poison"][1] -= 1
+				if buffs[j]["poison"][1] <= 0:
+					buffs[j].erase("poison")
+					src.buffs = buffs
 		stat_update(src)
 
-func realtime_handler(): # For buffs that need to be applied realtime
+func realtime_handler(delta): # For buffs that need to be applied realtime
 	for i in realtime_buffs:
 		if i["type"] == "knockback":
 			var temp_w
@@ -57,31 +76,54 @@ func realtime_handler(): # For buffs that need to be applied realtime
 					enemy_nodes[source]["node"].buffs = enemy_nodes[source]["buffs"]
 					print(enemy_nodes[source]["buffs"])
 				realtime_buffs.erase(i)
+	
+func temp_buff_handler(delta):
+	for i in temp_buffs:
+		if !is_instance_valid(i['node']):
+			temp_buffs.erase(i)
+			continue
+		if i['applied']:
+			i['timer'] -= delta
+			if i['timer'] <= 0:
+				i['node'].multipliers[i['details']['stat']] /= i['details']['multiplier']
+				i['node'].offsets[i['details']['stat']] -= i['details']['offsets']
+				i['sprite'].queue_free()
+				temp_buffs.erase(i)
+		else:
+			i['applied'] = true
+			i['node'].multipliers[i['details']['stat']] *= i['details']['multiplier']
+			i['node'].offsets[i['details']['stat']] += i['details']['offsets']
+			var buff_sprite = buff_spr_base.instance()
+			buff_sprite.play("burn")
+			i['node'].add_child(buff_sprite)
+			i['sprite'] = buff_sprite
 
 func damage_handler(damage, effects, buffs, source):
 	if !effects.empty():
 		update_buffs(effects, source)
 	var dam = damage
-	if "defense" in buffs:
-		dam = damage - buffs["defense"]
-		
+	dam = damage - source.DEF
+	
 	if dam > 0:
-		if "shield" in buffs:#"shield": ["stack", "duration", "party", "behaviour"],
-			buffs["shield"][0] -= 1
-			if buffs["shield"][0] <= 0:
-				buffs.erase("shield")
-				if "shield_sprite" in buffs:
-					buffs["shield_sprite"].queue_free()
-					buffs.erase("shield_sprite")
-			elif "shield_sprite" in buffs:
-				var temp = buffs["shield_sprite"]
+		var tempShield = find_buff(buffs, "shield")
+		if tempShield.size() > 0:#"shield": ["stack", "duration", "party", "behaviour"],
+			buffs[tempShield[0]]["shield"][0] -= 1
+			if buffs[tempShield[0]]["shield"][0] <= 0:
+				buffs[tempShield[0]].erase("shield")
+				if "sprite" in buffs[tempShield[0]]:
+					buffs[tempShield[0]]["sprite"].queue_free()
+					buffs[tempShield[0]].erase("sprite")
+				if buffs[tempShield[0]].empty():
+					buffs.erase([tempShield[0]])
+			elif "sprite" in buffs[tempShield[0]]:
+				var temp = buffs[tempShield[0]]["sprite"]
 				if temp.skill_origin == "c132_shield":
-					if buffs["shield"][0] >= 3:
-						buffs["shield_sprite"].play("n_shield_0")
-					elif buffs["shield"][0] == 2:
-						buffs["shield_sprite"].play("n_shield_1")
-					elif buffs["shield"][0] == 1:
-						buffs["shield_sprite"].play("n_shield_2")
+					if buffs[tempShield[0]]["shield"][0] >= 3:
+						buffs[tempShield[0]]["sprite"].play("n_shield_0")
+					elif buffs[tempShield[0]]["shield"][0] == 2:
+						buffs[tempShield[0]]["sprite"].play("n_shield_1")
+					elif buffs[tempShield[0]]["shield"][0] == 1:
+						buffs[tempShield[0]]["sprite"].play("n_shield_2")
 		else:
 			source.damage(dam)
 	else:
@@ -105,6 +147,35 @@ func update_buffs(effects, source):
 		for i in temp:
 			var temp2 = {"node":source, "type":"knockback", "details":effects[i]["knockback"], "source_buff":effects["name"]}
 			realtime_buffs.append(temp2)
+	
+	temp = find_buff(effects, "fast")	#"fast": ["speed", "duration", "party", "behaviour"],
+	if temp.size() > 0:
+		for i in temp:
+			var temp2 = {"node":source, "details":{"stat":"MAX_SPEED", "offsets":0, "multiplier":effects[i]["fast"][0]},
+				"timer":effects[i]["fast"][1], "applied":false, "party":effects[i]["fast"][2], "behaviour":effects[i]["fast"][3]}
+			temp_buffs.append(temp2)
+	
+	temp = find_buff(effects, "tough")	#"tough": ["def", "duration", "party", "behaviour"],
+	if temp.size() > 0:
+		for i in temp:
+			var temp2 = {"node":source, "details":{"stat":"DEF", "offsets":effects[i]["tough"][0], "multiplier":1},
+				"timer":effects[i]["tough"][1], "applied":false, "party":effects[i]["tough"][2], "behaviour":effects[i]["tough"][3]}
+			temp_buffs.append(temp2)
+	
+	temp = find_buff(effects, "strong")	#"strong": ["damage", "duration", "party", "behaviour"]
+	if temp.size() > 0:
+		for i in temp:
+			var temp2 = {"node":source, "details":{"stat":"ATTACK_DAMAGE", "offsets":0, "multiplier":effects[i]["strong"][0]},
+				"timer":effects[i]["strong"][1], "applied":false, "party":effects[i]["strong"][2], "behaviour":effects[i]["strong"][3]}
+			temp_buffs.append(temp2)
+			print("str updated")
+	
+	temp = find_buff(effects, "quick")	#"quick": ["aspd", "duration", "party", "behaviour"]
+	if temp.size() > 0:
+		for i in temp:
+			var temp2 = {"node":source, "details":{"stat":"ATTACK_COOLDOWN", "offsets":0, "multiplier":effects[i]["quick"][0]},
+				"timer":effects[i]["quick"][1], "applied":false, "party":effects[i]["quick"][2], "behaviour":effects[i]["quick"][3]}
+			temp_buffs.append(temp2)
 	
 	stat_update(source)
 	
@@ -163,7 +234,13 @@ func get_e_index(source):
 	return enemy_nodes.size()-1
 
 func add_character(source):
-	char_nodes.append({'node':source, 'buffs':source.buffs})
+	var present = false
+	for i in char_nodes:
+		if i['node'] == source:
+			present = true
+	if !present:
+		print("character added")
+		char_nodes.append({'node':source, 'buffs':source.buffs})
 
 func enemy_dead(src):
 	for i in range(0,enemy_nodes.size()):
@@ -183,8 +260,7 @@ func add_buff(buff):
 	#Get target character, will only add, effects will be applied with sec timer
 	for i in char_nodes:
 		if i["node"].CODE == GameHandler.get_active_char():
-			i["buffs"][buff["name"]] = buff["buffs"]
-			print("p-node - ",char_nodes)
+			update_buffs(buff, i["node"])
 
 func knockback_handler(source, knockback, weight):	#if returns true, knockback done, else ongoing
 	source.direction = knockback[1]
@@ -199,3 +275,36 @@ func knockback_handler(source, knockback, weight):	#if returns true, knockback d
 	else:
 		timers[str(source)+"_knockback"] = knockback[0]
 	return false
+
+func change_room(old_Id, new_Id):
+	#for i in char_nodes:
+		#if i['node'] == old_Id:
+			#i['node'] = new_Id
+	for i in realtime_buffs:
+		if i['node'] == old_Id:
+			i['node'] = new_Id
+	for i in temp_buffs:
+		if i['node'] == old_Id:
+			i['node'] = new_Id
+			i['applied'] = false #reapply
+	for i in reapply:
+		if i['node'] == old_Id:
+			i['node'] = new_Id
+
+func save_sprites():	#save buff sprites not in temp buffs
+	print(char_nodes)
+	for i in char_nodes:
+		for b in i['buffs']:
+			if 'sprite' in i['buffs'][b]:
+				reapply.append({"node":i['node'], "path":b, "sprite_animation":i['buffs'][b]['sprite'].get_animation(), "skill_origin":i['buffs'][b]['sprite'].skill_origin})
+
+func load_sprites():	#reapply saved sprites
+	print("loading")
+	for i in reapply:
+		var temp = buff_spr_base.instance()
+		temp.play(i["sprite_animation"])
+		temp.skill_origin = i["skill_origin"]
+		i['node'].add_child(temp)
+		var index = get_p_index(i['node'])
+		char_nodes[index]["buffs"][i['path']]['sprite'] = temp
+	reapply.clear()

@@ -16,6 +16,9 @@ var last_mouse_angle
 var can_damage = false
 var swing_dur_counter = 0
 
+var multipliers
+var offsets
+
 signal EntityHit(damage,type, effect, evalue)
 
 func _ready():
@@ -50,6 +53,8 @@ func _on_Area2D_body_entered(body):
 	if body.has_method("take_damage") and body.is_in_group("enemy") and can_damage and ACTIVE:
 		EFFECTS["knockback"][0] = EFFECT_VAL["knockback"]
 		EFFECTS["knockback"][1] = rotation
+		var damage = (DAMAGE + offsets["ATTACK_DAMAGE"]) * multipliers["ATTACK_DAMAGE"]
+		print("from weapon: Dealt ",damage," damage")
 		self.connect("EntityHit",body,"take_damage")
-		emit_signal("EntityHit",DAMAGE, {"name":"noel mace", "buffs":EFFECTS})
+		emit_signal("EntityHit",damage, {"name":"noel mace", "buffs":EFFECTS})
 		self.disconnect("EntityHit",body,"take_damage")

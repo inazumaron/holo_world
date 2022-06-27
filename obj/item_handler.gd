@@ -2,7 +2,8 @@ extends Node
 
 const blank = {"name":"Blank","type":"none"}
 var item1 = {"name":"Nakirium", "type":"Stack", "effect":"Buff", "stack_count":3, "effect_details":{"heal": [5, 0]}}
-var item2 = {"name":"Blank", "type":"none", "effect":"none"}
+var item2 = {"name":"Asacoco", "type":"Stack", "effect":"Buff", "stack_count":3, 
+		"effect_details":{"strong": [2, 15, 0, "bg"],"tough": [1, 15, 0, "bg"]}}
 
 var item_r_cooldown = [1,1]	#for room type cooldowns, turns to 1 on next not cleared room, 0 when used
 var item_cooldowns = [0,0]	#for cooldowns not room type, process will handle this part
@@ -161,10 +162,10 @@ func activate_item(x):
 
 func e_buff(x):
 	if x:
-		var temp_buff = {"name": item2["name"], "buffs": item2["effect_details"]}
+		var temp_buff = {"name": item2["name"], "buffs": item2["effect_details"].duplicate()}
 		BuffHandler.add_buff(temp_buff)
 	else:
-		var temp_buff = {"name": item1["name"], "buffs": item1["effect_details"]}
+		var temp_buff = {"name": item1["name"], "buffs": item1["effect_details"].duplicate()}
 		BuffHandler.add_buff(temp_buff)
 	
 func e_recruit(x):

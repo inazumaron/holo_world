@@ -16,6 +16,7 @@ var ATTACK_EFFECTS = []
 var SPECIAL_CODE = "c132_shield"
 var SPECIAL_COOLDOWN = 1
 var SPECIAL_REGEN_TYPE = 0 #0 - auto, 1 - offensive, 2 - defensive
+var SPECIAL_EFFECTS = []
 
 var DAMAGE_ANIM_DUR = 0.2
 var ACTIVE = true			#for collab on field
@@ -34,6 +35,26 @@ var pos_timer = 0	#update position for game
 var damage_anim_timer = 0 # damage invulnerability time
 var attack_timer = 0
 var buffs = {}		#contains debuffs and buffs
+var multipliers = {
+	"MAX_SPEED":1,
+	"MAX_HP":1,
+	"HP":1,
+	"DEF":1,
+	"ATTACK_COOLDOWN":1,
+	"ATTACK_STACK_COUNT":1,
+	"ATTACK_DAMAGE":1,
+	"SPECIAL_COOLDOWN":1
+}	#For buffs effects, in the format "stat name": float multiplier
+var offsets = {
+	"MAX_SPEED":1,
+	"MAX_HP":1,
+	"HP":1,
+	"DEF":1,
+	"ATTACK_COOLDOWN":1,
+	"ATTACK_STACK_COUNT":1,
+	"ATTACK_DAMAGE":1,
+	"SPECIAL_COOLDOWN":1
+}	#For buffs adding flat increase
 
 var minimap_base = preload("res://ui/minimap.tscn")
 var minimap = null
@@ -48,6 +69,8 @@ var weapon = weapon_base.instance()
 func _ready():
 	add_to_group("player")
 	add_child(weapon)
+	weapon.multipliers = multipliers
+	weapon.offsets = offsets
 	generate_ui()
 	
 	ui_manipulation(0)
