@@ -2,14 +2,15 @@ extends Node
 
 const blank = {"name":"Blank","type":"none"}
 var item1 = {"name":"Nakirium", "type":"Stack", "effect":"Buff", "stack_count":3, "effect_details":{"heal": [5, 0]}}
-var item2 = {"name":"Asacoco", "type":"Stack", "effect":"Buff", "stack_count":3, 
-		"effect_details":{"strong": [2, 15, 0, "bg"],"tough": [1, 15, 0, "bg"]}}
+var item2 = {"name":"Bloop", "type":"Passive", "effect":"Buff", "effect_details":{"heal_pr":[2,0, false]}, "cooldown":"room"}
 
 var item_r_cooldown = [1,1]	#for room type cooldowns, turns to 1 on next not cleared room, 0 when used
 var item_cooldowns = [0,0]	#for cooldowns not room type, process will handle this part
 
 var can_use = true		#item cooldown
 var cooldown = 0
+
+var passive_processed = false
 
 const item_list = {
 	"Ticket":
@@ -26,7 +27,7 @@ const item_list = {
 		{"name":"Asacoco", "type":"Stack", "effect":"Buff", "stack_count":3, 
 		"effect_details":{"strong": [2, 15, 0, "bg"],"tough": [1, 15, 0, "bg"]}},
 	"Bloop":
-		{"name":"Bloop", "type":"Passive", "effect":"Passive", "effect_details":""},
+		{"name":"Bloop", "type":"Passive", "effect":"Buff", "effect_details":{"heal_pr":[2,0, false]}, "cooldown":"room"},
 	"Kiara's feather":
 		{"name":"Kiara's feather", "type":"Passive", "effect":"Buff", 
 		"effect_details":{"revive": [1, 1, 1]}},
@@ -105,6 +106,18 @@ func use_item(x):
 			t_unlimited(x)
 		if(item1["type"] == "Switch"):
 			t_switch(x)
+
+func process_passive_proc():
+	if item1["type"] == "Passive":
+		process_passives(item1)
+	if item2["type"] == "Passive":
+		process_passives(item2)
+
+func process_passives(item):
+	if item["effect"] == "Buff":
+		var temp_buff = {"name":item["name"], "buffs": item["effect_details"].duplicate()}
+		BuffHandler.add_buff(temp_buff)
+		print("added ",temp_buff)
 
 func t_single_use(x):
 	activate_item(x)

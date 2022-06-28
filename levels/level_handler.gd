@@ -71,6 +71,7 @@ func _process(delta):
 	if character == null:
 		generate_character()
 		character.generate_minimap(path, active_room_val)
+		ItemHandler.process_passive_proc()
 		
 	if active_room.cleared and door_list.size() == 0:
 		path[active_room_val]["cleared"] = true
@@ -118,7 +119,6 @@ func gen_template(data):
 	while !valid:
 		i = randi()%room_templates.size()
 		if i == 2:
-			print("template 2 ", data)
 			if data["up"] == -1 and data["down"] == -1:
 				valid = true
 		elif i == 3:
@@ -156,6 +156,7 @@ func change_room():
 		if char3 != null:
 			BuffHandler.change_room(prev_char3, char3)
 		BuffHandler.load_sprites()
+		BuffHandler.room_update()
 		
 		if path[active_room_val]["boss_room"] and !path[active_room_val]["cleared"]:
 			dialogue()

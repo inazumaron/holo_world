@@ -33,6 +33,7 @@ const buff = {
 	"quick": ["aspd", "duration", "party", "behaviour"],		#aspd = cooldown multiplier
 	"regen": ["amount", "duration", "party", "behaviour"],
 	"heal": ["amount", "party"],
+	"heal_pr":["amount", "party", "activated"],
 	"shield": ["stack", "duration", "party", "behaviour"],
 	"critRate": ["value", "duration", "party", "behaviour"],
 	"critDmg": ["value", "duration", "party", "behaviour"],
@@ -58,6 +59,3 @@ const boss_level = {
 	#9		-	7 + 0.5 enemy budget
 	#10		-	same as main character, 7 + 2 enemy budget 
 }
-
-#Bugs found
-# - dialogue repeates even when cleared

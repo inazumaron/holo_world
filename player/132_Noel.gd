@@ -105,7 +105,7 @@ func general_timer_update(delta):
 		pos_timer = POS_UPDATE_TIMER
 		
 	if attack_timer < ATTACK_STACK_COUNT:
-		attack_timer += delta/ATTACK_COOLDOWN
+		attack_timer += delta/(ATTACK_COOLDOWN * multipliers["ATTACK_COOLDOWN"])
 
 func general_action():
 	if Input.is_action_just_pressed("mouse_click"):
@@ -131,7 +131,7 @@ func apply_friction(amount):
 
 func apply_movement(acceleration):
 	movement += acceleration
-	movement = movement.clamped(MAX_SPEED)
+	movement = movement.clamped((MAX_SPEED + offsets["MAX_SPEED"])*multipliers["MAX_SPEED"])
 	return movement
 
 func attack():
@@ -215,9 +215,11 @@ func setCamera(x):
 func generate_ui():
 	ui = ui_base.instance()
 	ui.position = Vector2(-380,-260)
+	ui.z_index = 1
 	add_child(ui)
 	item = item_base.instance()
 	item.position = Vector2(-420,260)
+	item.z_index = 1
 	add_child(item)
 	ui_manipulation(0)
 
@@ -225,6 +227,7 @@ func generate_minimap(path, active_room_val):
 	minimap = minimap_base.instance()
 	minimap.map = path
 	minimap.loc = active_room_val
+	minimap.z_index = 1
 	add_child(minimap)
 	minimap.generate_minimap()
 

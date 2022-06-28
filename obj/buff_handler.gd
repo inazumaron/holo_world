@@ -17,6 +17,12 @@ var reapply = []
 #data format: {node: string, buff_path: [string, string ...], sprite_animation: string}
 #for data with sprites thats not temp buff, mainly for reapplying sprites
 
+var party_buffs = []
+#data format: {node: string (who has the buff), details: {}, type: string (sec, realtime, temp_buff, etc) which handler deals with it
+#			depending on type:, applied: bool, timer: 
+#for buffs affecting whole party
+
+const room_delayed_buffs = ["heal_pr"] #just update this
 #sec timer deals with buffs that is applied every second, i.e. poison, DoT stuff, HoT
 
 var timers = {'sec':0}
@@ -74,7 +80,6 @@ func realtime_handler(delta): # For buffs that need to be applied realtime
 					source = get_e_index(i["node"])
 					enemy_nodes[source]["buffs"].erase(i["source_buff"])
 					enemy_nodes[source]["node"].buffs = enemy_nodes[source]["buffs"]
-					print(enemy_nodes[source]["buffs"])
 				realtime_buffs.erase(i)
 	
 func temp_buff_handler(delta):
@@ -94,7 +99,7 @@ func temp_buff_handler(delta):
 			i['node'].multipliers[i['details']['stat']] *= i['details']['multiplier']
 			i['node'].offsets[i['details']['stat']] += i['details']['offsets']
 			var buff_sprite = buff_spr_base.instance()
-			buff_sprite.play("burn")
+			buff_sprite.play(i['details']['stat'])
 			i['node'].add_child(buff_sprite)
 			i['sprite'] = buff_sprite
 
@@ -141,6 +146,7 @@ func update_buffs(effects, source):
 		var x = enemy_nodes[i]['node']
 		x.buffs = enemy_nodes[i]['buffs']
 		
+	#================================================================================================
 	#passing buffs to realtime handler
 	var temp = find_buff(effects, "knockback")
 	if temp.size() > 0:
@@ -148,6 +154,8 @@ func update_buffs(effects, source):
 			var temp2 = {"node":source, "type":"knockback", "details":effects[i]["knockback"], "source_buff":effects["name"]}
 			realtime_buffs.append(temp2)
 	
+	#================================================================================================
+	#passing buffs to temp buffs handler
 	temp = find_buff(effects, "fast")	#"fast": ["speed", "duration", "party", "behaviour"],
 	if temp.size() > 0:
 		for i in temp:
@@ -168,7 +176,6 @@ func update_buffs(effects, source):
 			var temp2 = {"node":source, "details":{"stat":"ATTACK_DAMAGE", "offsets":0, "multiplier":effects[i]["strong"][0]},
 				"timer":effects[i]["strong"][1], "applied":false, "party":effects[i]["strong"][2], "behaviour":effects[i]["strong"][3]}
 			temp_buffs.append(temp2)
-			print("str updated")
 	
 	temp = find_buff(effects, "quick")	#"quick": ["aspd", "duration", "party", "behaviour"]
 	if temp.size() > 0:
@@ -205,12 +212,30 @@ func stat_update(source):
 		effects[i].erase("heal")
 		if effects[i].empty():
 			effects.erase(i)
+			
+	temp_res = find_buff(effects, "heal_pr")
+	for i in temp_res:
+		if effects[i]["heal_pr"][2] == false:
+			if effects[i]["heal_pr"][1]:
+				pass #party
+			else:
+				source.HP = min(source.HP+effects[i]["heal_pr"][0], source.MAX_HP)
+				source.ui_manipulation(0)
+			effects[i]["heal_pr"][2] = true
 
 func find_buff(buff_list, buff_name):
 	var res = []
 	for i in buff_list:
 		if buff_name in buff_list[i]:
 			res.append(i)
+	return res
+
+func find_buff_list(buff_list, buff_names):
+	var res = []
+	for i in buff_list:
+		for j in buff_names:
+			if j in i:
+				res.append(i)
 	return res
 
 func is_player(id):
@@ -239,7 +264,6 @@ func add_character(source):
 		if i['node'] == source:
 			present = true
 	if !present:
-		print("character added")
 		char_nodes.append({'node':source, 'buffs':source.buffs})
 
 func enemy_dead(src):
@@ -277,7 +301,7 @@ func knockback_handler(source, knockback, weight):	#if returns true, knockback d
 	return false
 
 func change_room(old_Id, new_Id):
-	#for i in char_nodes:
+	#for i in char_nodes: # char nodes are refreshed when changing rooms
 		#if i['node'] == old_Id:
 			#i['node'] = new_Id
 	for i in realtime_buffs:
@@ -291,15 +315,13 @@ func change_room(old_Id, new_Id):
 		if i['node'] == old_Id:
 			i['node'] = new_Id
 
-func save_sprites():	#save buff sprites not in temp buffs
-	print(char_nodes)
+func save_sprites():	#save buff sprites not in temp buffs=
 	for i in char_nodes:
 		for b in i['buffs']:
 			if 'sprite' in i['buffs'][b]:
 				reapply.append({"node":i['node'], "path":b, "sprite_animation":i['buffs'][b]['sprite'].get_animation(), "skill_origin":i['buffs'][b]['sprite'].skill_origin})
 
 func load_sprites():	#reapply saved sprites
-	print("loading")
 	for i in reapply:
 		var temp = buff_spr_base.instance()
 		temp.play(i["sprite_animation"])
@@ -308,3 +330,10 @@ func load_sprites():	#reapply saved sprites
 		var index = get_p_index(i['node'])
 		char_nodes[index]["buffs"][i['path']]['sprite'] = temp
 	reapply.clear()
+
+func room_update():		#when changing rooms, refreshes room delayed buffs
+	for i in char_nodes:
+		var temp = find_buff_list(i["buffs"],room_delayed_buffs)
+		if temp.size() > 0:
+			for j in temp:
+				i["buffs"][j][2] = false
