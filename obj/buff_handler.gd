@@ -131,6 +131,18 @@ func damage_handler(damage, effects, buffs, source):
 						buffs[tempShield[0]]["sprite"].play("n_shield_2")
 		else:
 			source.damage(dam)
+			if source.HP <= 0:
+				var temp = find_buff(source.buffs, "revive")
+				if temp.size() > 0:
+					source.HP = source.buffs[temp[0]]["revive"][0] * source.MAX_HP
+					source.buffs[temp[0]]["revive"][1] -= 1
+					source.ui_manipulation(0)
+					if source.buffs[temp[0]]["revive"][1] <= 0:
+						if source.buffs[temp[0]]["source"] == "item":
+							ItemHandler.remove_item(source.buffs[temp[0]]["source_details"])
+						source.buffs.erase(temp[0])
+				else:
+					print("dead")
 	else:
 		source.damage(0)
 
@@ -234,7 +246,7 @@ func find_buff_list(buff_list, buff_names):
 	var res = []
 	for i in buff_list:
 		for j in buff_names:
-			if j in i:
+			if j in buff_list[i]:
 				res.append(i)
 	return res
 
@@ -336,4 +348,6 @@ func room_update():		#when changing rooms, refreshes room delayed buffs
 		var temp = find_buff_list(i["buffs"],room_delayed_buffs)
 		if temp.size() > 0:
 			for j in temp:
-				i["buffs"][j][2] = false
+				for k in room_delayed_buffs:
+					if k in i["buffs"][j]:
+						i["buffs"][j][k][2] = false

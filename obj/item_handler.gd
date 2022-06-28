@@ -2,7 +2,8 @@ extends Node
 
 const blank = {"name":"Blank","type":"none"}
 var item1 = {"name":"Nakirium", "type":"Stack", "effect":"Buff", "stack_count":3, "effect_details":{"heal": [5, 0]}}
-var item2 = {"name":"Bloop", "type":"Passive", "effect":"Buff", "effect_details":{"heal_pr":[2,0, false]}, "cooldown":"room"}
+var item2 = {"name":"Kiara's feather", "type":"Passive", "effect":"Buff", 
+		"effect_details":{"revive": [1, 1, 1], "source":"item", "source_details":"Kiara's feather"}}
 
 var item_r_cooldown = [1,1]	#for room type cooldowns, turns to 1 on next not cleared room, 0 when used
 var item_cooldowns = [0,0]	#for cooldowns not room type, process will handle this part
@@ -30,7 +31,7 @@ const item_list = {
 		{"name":"Bloop", "type":"Passive", "effect":"Buff", "effect_details":{"heal_pr":[2,0, false]}, "cooldown":"room"},
 	"Kiara's feather":
 		{"name":"Kiara's feather", "type":"Passive", "effect":"Buff", 
-		"effect_details":{"revive": [1, 1, 1]}},
+		"effect_details":{"revive": [1, 1, 1], "source":"item", "source_details":"Kiara's feather"}},
 	"Ame's Watch":
 		{"name":"Ame's Watch", "type":"Unlimited", "effect":"Skill", "cooldown":"room", "skill_name":""},
 	"Ao chan":
@@ -195,6 +196,12 @@ func update_items():
 		labels[1] = "x"+str(item2["stack_count"])
 	GameHandler.update_item(item1["name"], item2["name"], labels[0], labels[1])
 
+func remove_item(name):
+	if item1.name == name:
+		item1 = blank
+	elif item2.name == name:
+		item2 = blank
+	update_items()
 #Item idea dump
 #	Mic					-	passive, doubles voice related attacks/skills effects and range
 #	Rabbits foot		-	passive, improves move speed, increases luck
