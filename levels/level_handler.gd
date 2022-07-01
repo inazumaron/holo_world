@@ -50,7 +50,7 @@ var paused = false
 var dialogue_playing = false
 
 func _ready():
-	seed(0)
+	seed(3)
 	set_process(false)
 	if level_seed == 0:
 		level_seed = randi()

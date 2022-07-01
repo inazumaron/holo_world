@@ -141,8 +141,6 @@ func damage_handler(damage, effects, buffs, source):
 						if source.buffs[temp[0]]["source"] == "item":
 							ItemHandler.remove_item(source.buffs[temp[0]]["source_details"])
 						source.buffs.erase(temp[0])
-				else:
-					print("dead")
 	else:
 		source.damage(0)
 

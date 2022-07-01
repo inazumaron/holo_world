@@ -19,7 +19,7 @@ var swing_dur_counter = 0
 var multipliers
 var offsets
 
-signal EntityHit(damage,type, effect, evalue)
+signal EntityHit(damage,effects)
 
 func _ready():
 	visible = false

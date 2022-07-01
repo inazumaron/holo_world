@@ -13,7 +13,7 @@ var ATTACK_STACK_COUNT = 2
 var ATTACK_DAMAGE = 1
 var ATTACK_EFFECTS = []
 
-var SPECIAL_CODE = "c132_shield"
+var SPECIAL_CODE = "c134_scream"
 var SPECIAL_COOLDOWN = 1
 var SPECIAL_REGEN_TYPE = 0 #0 - auto, 1 - offensive, 2 - defensive
 var SPECIAL_EFFECTS = []
@@ -46,14 +46,14 @@ var multipliers = {
 	"SPECIAL_COOLDOWN":1
 }	#For buffs effects, in the format "stat name": float multiplier
 var offsets = {
-	"MAX_SPEED":1,
-	"MAX_HP":1,
-	"HP":1,
-	"DEF":1,
-	"ATTACK_COOLDOWN":1,
-	"ATTACK_STACK_COUNT":1,
-	"ATTACK_DAMAGE":1,
-	"SPECIAL_COOLDOWN":1
+	"MAX_SPEED":0,
+	"MAX_HP":0,
+	"HP":0,
+	"DEF":0,
+	"ATTACK_COOLDOWN":0,
+	"ATTACK_STACK_COUNT":0,
+	"ATTACK_DAMAGE":0,
+	"SPECIAL_COOLDOWN":0
 }	#For buffs adding flat increase
 
 var minimap_base = preload("res://ui/minimap.tscn")
@@ -112,8 +112,7 @@ func general_action():
 		attack()
 		
 	if Input.is_action_just_pressed("mouse_click_r"):
-		if SPECIAL_CODE == "c132_shield":
-			SkillHandler.c132_shield(self,buffs)
+		SkillHandler.activate_skill(self, buffs, SPECIAL_CODE)
 
 func get_input_axis():
 	var axis = Vector2.ZERO

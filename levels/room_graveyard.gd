@@ -71,6 +71,7 @@ func _ready():
 		set_process(true)
 	tilemap.z_index = 0
 	$TextBox.z_index = 2
+	$TextBox/Sprite.visible = false
 	print(BuffHandler.char_nodes)
 	
 func _process(delta):
@@ -192,10 +193,12 @@ func play_dialogue():
 		dialogue_text_len = 1
 		$Timer.start(0)
 	else:
+		$TextBox/Sprite.visible = false
 		textbox.set_bbcode("")
 		dialogue_playing = false
 
 func play_dialogue_text():
+	$TextBox/Sprite.visible = true
 	textbox.set_visible_characters(dialogue_text_len)
 	dialogue_text_len += 1
 	if dialogue_text_len > dialogue_text_max:
