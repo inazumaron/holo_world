@@ -25,18 +25,23 @@ var posFinal = Vector2.ZERO
 # Misc variables
 var dataLoaded = false
 var group = "" #will react to opposite group + neutral
-	# player
-	# enemy
-	# neutral
-	# border
+	
+var animation_finished = false
+var curr_animation
+var next_animation = ""
+var death_anim = ""
+
+var isProp = false
+var queue_next = false		#mainly in ending animation, queue when finished
+	
 signal EntityHit(damage, effect)
 
 func _ready():
-	set_process(false)
+	pass
+	#if !isProp:
+		#set_process(false)
 
 func setData(data):
-	if "sprPath" in data:
-		sprPath = data["sprPath"]
 	if "sprSize" in data:
 		sprSize = data["sprSize"]
 	if "sprShape" in data:
@@ -61,13 +66,20 @@ func setData(data):
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	move(delta)
-	timer(delta)
+	if !isProp:
+		move(delta)
+		timer(delta)
+	
+	if next_animation != "" and animation_finished:
+		play(next_animation)
+		next_animation = ""
 	
 func move(delta):
-	position = transform.x * velocity * delta
+	position += velocity * delta
 	if velocity < maxVelocity:
-		velocity = min(velocity + acceleration * delta, maxVelocity)
+		velocity += acceleration * delta
+	else:
+		velocity = maxVelocity
 
 func timer(delta):
 	duration -= delta
@@ -77,16 +89,36 @@ func timer(delta):
 func getMidRange():
 	return Vector2(posStart.x + .5 * (posFinal.x - posStart.x), posStart.y + .5 * (posFinal.y - posStart.y))
 
+func play(anim):
+	$AnimatedSprite.play(anim)
+	animation_finished = false
+
+func play_next(anim):
+	next_animation = anim
+
 func _on_CollisionShape_body_entered(body):
-	var damage = false
-	if group == "player":
-		if body.is_in_group("enemy") or body.is_in_body("neutral"):
-			damage = true
-	if group == "enemy":
-		if body.is_in_group("player") or body.is_in_body("neutral"):
-			damage = true
-	if body.is_in_group("border"):
+	if !isProp:
+		if body.has_method("take_damage"):
+			var can_damage = false
+			if group == "player":
+				if body.is_in_group("enemy") or body.is_in_body("neutral"):
+					can_damage = true
+			if group == "enemy":
+				if body.is_in_group("player") or body.is_in_body("neutral"):
+					can_damage = true
+					
+			if can_damage:
+				self.connect("EntityHit",body,"take_damage")
+				emit_signal("EntityHit",damage, effects)
+			
+		if death_anim != "":
+			set_process(false)
+			play(death_anim)
+			queue_next = true
+		else:
+			queue_free()
+
+func _on_AnimatedSprite_animation_finished():
+	animation_finished = true
+	if queue_next:
 		queue_free()
-	if body.has_method("take_damage") and damage:
-		self.connect("EntityHit",body,"take_damage")
-		emit_signal("EntityHit",damage, effects)
