@@ -13,7 +13,7 @@ var ATTACK_STACK_COUNT = 2
 var ATTACK_DAMAGE = 1
 var ATTACK_EFFECTS = []
 
-var SPECIAL_CODE = "c134_hexBlast"
+var SPECIAL_CODE = "c134_hexBeam"
 var SPECIAL_COOLDOWN = 1
 var SPECIAL_REGEN_TYPE = 0 #0 - auto, 1 - offensive, 2 - defensive
 var SPECIAL_EFFECTS = []
@@ -29,6 +29,7 @@ var can_attack = true
 var movement = Vector2.ZERO
 var anim_dir = 1 #1-right, -1 left
 var last_anim_dir = 0 #0 - left, 1 - right
+var IS_BOSS = false		#for checking skill usage between player and boss
 
 #------------------------ Timers
 var pos_timer = 0	#update position for game
@@ -245,3 +246,6 @@ func sgn(x):
 	if x>0:
 		return 1
 	return -1
+
+func get_dir():	#for skill handler to get mouse direction
+	return get_angle_to(get_global_mouse_position())

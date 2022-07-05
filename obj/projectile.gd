@@ -101,10 +101,10 @@ func _on_CollisionShape_body_entered(body):
 		if body.has_method("take_damage"):
 			var can_damage = false
 			if group == "player":
-				if body.is_in_group("enemy") or body.is_in_body("neutral"):
+				if body.is_in_group("enemy") or body.is_in_group("neutral"):
 					can_damage = true
 			if group == "enemy":
-				if body.is_in_group("player") or body.is_in_body("neutral"):
+				if body.is_in_group("player") or body.is_in_group("neutral"):
 					can_damage = true
 					
 			if can_damage:

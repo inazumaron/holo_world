@@ -25,6 +25,8 @@ func _process(delta):
 				else:
 					if skill == "134_hb":
 						c134_hexBlast(states[skill]["source"], states[skill]["buffs"])
+					if skill == "134_he":
+						c134_hexBeam(states[skill]["source"], states[skill]["buffs"])
 
 func activate_skill(source, buff, skill_code):
 	if skill_code == "c132_shield":
@@ -33,6 +35,8 @@ func activate_skill(source, buff, skill_code):
 		c134_scream(source, buff)
 	if skill_code == "c134_hexBlast":
 		c134_hexBlast(source, buff)
+	if skill_code == "c134_hexBeam":
+		c134_hexBeam(source, buff)
 
 func c132_shield(source, preBuff):
 	var buff_spr = buff_sprite.instance()
@@ -84,7 +88,6 @@ func c134_hexBlast(source, buffs):
 		for i in range(0, vars["obj"].size()):
 			var temp_proj = proj_sprite.instance()
 			temp_proj.damage = source.ATTACK_DAMAGE
-			temp_proj.posStart = vars["obj"][i].global_position
 			temp_proj.global_position = vars["obj"][i].global_position
 			temp_proj.velocity = 100 * Vector2(cos(deg2rad(vars["dir"][i])),sin(deg2rad(vars["dir"][i])))
 			temp_proj.acceleration = 100 * Vector2(cos(deg2rad(vars["dir"][i])),sin(deg2rad(vars["dir"][i])))
@@ -119,3 +122,59 @@ func hexBlast_spin(delta):
 			vars["dir"][i] -= 360
 	for i in range(0, vars["obj"].size()):
 		vars["obj"][i].position = 64 * Vector2(cos(deg2rad(vars["dir"][i])), sin(deg2rad(vars["dir"][i])))
+
+func c134_hexBeam(source, buffs):
+	if not("134_he" in states):
+		var dir
+		var group
+		if source.IS_BOSS:
+			var temp = GameHandler.get_char_pos()
+			var temp2 = source.global_position
+			dir = Vector2(temp.x - temp2.x, temp.y - temp2.y).normalized()
+			group = "enemy"
+		else:
+			var temp = source.get_dir()
+			dir = Vector2(cos(temp), sin(temp)).normalized()
+			group = "player"
+		states["134_he"] = {"state":0, "dir":dir, "group":group, "timer":0.3, "obj":[], "ammo":15, "obj_dir":[0,120,240], "source":source, "buffs":buffs, "dir_rad":source.get_dir()}
+		set_process(true)
+	var vars = states["134_he"]
+	if vars["state"] == 0:
+		if vars["obj_dir"].size() > vars["obj"].size():
+			var temp_prop = proj_sprite.instance()
+			temp_prop.isProp = true
+			temp_prop.play("Rushia_orb_create")
+			temp_prop.play_next("Rushia_orb_idle")
+			source.add_child(temp_prop)
+			temp_prop.position += (64 * vars["dir"]) + (16 * Vector2(cos(deg2rad(vars["obj_dir"][vars["obj"].size()])),sin(deg2rad(vars["obj_dir"][vars["obj"].size()]))))
+			vars["obj"].append(temp_prop)
+			vars["timer"] = 0.3
+		else:
+			vars["state"] = 1
+			vars["timer"] = 0.5
+	elif vars["state"] == 1:
+		if vars["ammo"] > 0:
+			var temp_proj = proj_sprite.instance()
+			var proj_dir = rad2deg(vars["dir_rad"]) + (randi()%60) - 30
+			var proj_vec = Vector2(cos(deg2rad(proj_dir)), sin(deg2rad(proj_dir))).normalized()
+			temp_proj.damage = source.ATTACK_DAMAGE
+			temp_proj.global_position = source.global_position + (64 * vars["dir"])
+			temp_proj.velocity = 150 * proj_vec
+			temp_proj.acceleration = 200 * proj_vec
+			temp_proj.maxVelocity = 300 * proj_vec
+			temp_proj.group = vars["group"]
+			temp_proj.play("Rushia_orb_launch")
+			temp_proj.death_anim = "Rushia_orb_end"
+			temp_proj.rotation_degrees = proj_dir
+			temp_proj.scale = Vector2(2,2)
+			get_tree().get_root().add_child(temp_proj)
+			vars["timer"] = 0.1
+			vars["ammo"] -= 1
+		else:
+			for i in range(0, vars["obj"].size()):
+				vars["obj"][i].play("Rushia_orb_end")
+				vars["obj"][i].queue_next = true
+			vars["state"] = 2
+			vars["timer"] = 0.5
+	else:
+		states.erase("134_he")

@@ -23,7 +23,7 @@ var level_list = []
 const MAX_LEVELS = 10		#how many levels 
 const WORLD_NUM = 5		#amount of available worlds
 const room_radius = 408
-var curr_world_id = "none"
+var curr_world_id = "none"		#refers to level handler id
 
 var worlds = []
 var pos = Vector2(0, MAX_LEVELS-1)
@@ -201,6 +201,13 @@ func get_active_char(): #Returns active character code
 	if active_character == 2:
 		return co_char_2
 
+func get_char_pos():
+	if active_character == 0:
+		return curr_world_id.character.global_position
+	if active_character == 1:
+		return curr_world_id.char2.global_position
+	if active_character == 2:
+		return curr_world_id.char3.global_position
 #============================================  set var functions
 func set_next_step(x):
 	next_step = x
