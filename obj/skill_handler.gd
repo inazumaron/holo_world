@@ -9,6 +9,7 @@ const area_effect = preload("res://obj/sfx_effect.tscn")
 const proj_sprite = preload("res://obj/projectile.tscn")
 
 var states = {}		#For skills with multiple stages, use this as reference
+var projectiles = []	#For handling root created projectiles, mainly in deleting when moving to next room
 
 func _process(delta):
 	if states.empty():
@@ -37,6 +38,17 @@ func activate_skill(source, buff, skill_code):
 		c134_hexBlast(source, buff)
 	if skill_code == "c134_hexBeam":
 		c134_hexBeam(source, buff)
+
+func change_room():		#Delete ongoing skills
+	for i in states:
+		if "obj" in states[i]:
+			for j in states[i]["obj"]:
+				j.queue_free()
+	for i in projectiles:
+		i.queue_free()
+		
+	states.clear()
+	projectiles.clear()
 
 func c132_shield(source, preBuff):
 	var buff_spr = buff_sprite.instance()
@@ -103,6 +115,7 @@ func c134_hexBlast(source, buffs):
 			temp_proj.rotation_degrees = vars["dir"][i]
 			temp_proj.scale = Vector2(2,2)
 			get_tree().get_root().add_child(temp_proj)
+			projectiles.append(temp_proj)
 		vars["timer"] = 0.5
 		vars["ammo"] -= 1
 	elif vars["state"] == 1:
@@ -126,17 +139,20 @@ func hexBlast_spin(delta):
 func c134_hexBeam(source, buffs):
 	if not("134_he" in states):
 		var dir
+		var dir_rad
 		var group
 		if source.IS_BOSS:
 			var temp = GameHandler.get_char_pos()
 			var temp2 = source.global_position
 			dir = Vector2(temp.x - temp2.x, temp.y - temp2.y).normalized()
+			dir_rad = dir.angle()
 			group = "enemy"
 		else:
 			var temp = source.get_dir()
+			dir_rad = source.get_dir()
 			dir = Vector2(cos(temp), sin(temp)).normalized()
 			group = "player"
-		states["134_he"] = {"state":0, "dir":dir, "group":group, "timer":0.3, "obj":[], "ammo":15, "obj_dir":[0,120,240], "source":source, "buffs":buffs, "dir_rad":source.get_dir()}
+		states["134_he"] = {"state":0, "dir":dir, "group":group, "timer":0.3, "obj":[], "ammo":15, "obj_dir":[0,120,240], "source":source, "buffs":buffs, "dir_rad":dir_rad}
 		set_process(true)
 	var vars = states["134_he"]
 	if vars["state"] == 0:
@@ -168,6 +184,7 @@ func c134_hexBeam(source, buffs):
 			temp_proj.rotation_degrees = proj_dir
 			temp_proj.scale = Vector2(2,2)
 			get_tree().get_root().add_child(temp_proj)
+			projectiles.append(temp_proj)
 			vars["timer"] = 0.1
 			vars["ammo"] -= 1
 		else:

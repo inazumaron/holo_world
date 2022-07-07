@@ -104,7 +104,6 @@ func temp_buff_handler(delta):
 			i['sprite'] = buff_sprite
 
 func damage_handler(damage, effects, buffs, source):
-	print("damaged")
 	if !effects.empty():
 		update_buffs(effects, source)
 	var dam = damage

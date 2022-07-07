@@ -15,22 +15,25 @@ const enemy_data = [
 	{"name":"zombie_basic","level":1,"cost":1}]
 const obs_base = preload("res://levels/obstacle_small.tscn")
 const e_1_1 = preload("res://enemies/gy_zombie_basic.tscn")
+const boss_base = preload("res://enemies/boss.tscn")
 
+var boss_room = false
 const boss_dialogue = [["Nee...", "What do you think you're doing here", "You wanna die?"]]
-const boss_base = ["I see", "You want to take everything away from me huh", "Id like to see you try"]
+const boss_main = ["I see", "You want to take everything away from me huh", "Id like to see you try"]
 
 #Function/s
 func create_enemies():
-	while enemy_cost > 0:
-		var i = rng.randi()%enemy_bases.size()
-		match enemy_bases[i]["name"]:
-			"zombie_basic":
-				var temp = e_1_1.instance()
-				temp.position = (enemy_pos[rng.randi()%enemy_pos.size()] - screen_offset) * 64
-				temp.SEED = rng.randi()
-				add_child(temp)
-				enemy_list.append(temp)
-				enemy_cost -= enemy_bases[i]["cost"]
+	if !boss_room:
+		while enemy_cost > 0:
+			var i = rng.randi()%enemy_bases.size()
+			match enemy_bases[i]["name"]:
+				"zombie_basic":
+					var temp = e_1_1.instance()
+					temp.position = (enemy_pos[rng.randi()%enemy_pos.size()] - screen_offset) * 64
+					temp.SEED = rng.randi()
+					add_child(temp)
+					enemy_list.append(temp)
+					enemy_cost -= enemy_bases[i]["cost"]
 
 #===============================================================================
 #======== Dont edit past this unless you know what you're doing ================
@@ -72,7 +75,6 @@ func _ready():
 	tilemap.z_index = 0
 	$TextBox.z_index = 2
 	$TextBox/Sprite.visible = false
-	print(BuffHandler.char_nodes)
 	
 func _process(delta):
 	var all_dead = true
@@ -92,6 +94,13 @@ func _process(delta):
 			next_dialogue_click = false
 			dialogue_page += 1
 			play_dialogue()
+
+func boss_room_setup():
+	enemy_cost = 0
+	var temp_boss = boss_base.instance()
+	temp_boss.position = Vector2.ZERO
+	add_child(temp_boss)
+	enemy_list.append(temp_boss)
 
 func create_room():
 	for y in range(0, screen_size):

@@ -109,7 +109,14 @@ func generate_room():
 	active_room.enemy_cost = enemy_budget
 	active_room.room_seed = level_seed - room_count + active_room_val
 	active_room.cleared = path[active_room_val]["cleared"]
-	active_room.generate_obstacles(room_templates[path[active_room_val]["template"]])
+	
+	if path[active_room_val]["boss_room"] and !path[active_room_val]["cleared"]:
+			active_room.boss_room = true
+			
+	if !active_room.boss_room:
+		active_room.generate_obstacles(room_templates[path[active_room_val]["template"]])
+	else:
+		active_room.boss_room_setup()
 	
 	add_child(active_room)
 
@@ -158,8 +165,10 @@ func change_room():
 		BuffHandler.load_sprites()
 		BuffHandler.room_update()
 		
-		if path[active_room_val]["boss_room"] and !path[active_room_val]["cleared"]:
-			dialogue()
+		SkillHandler.change_room()
+		
+		#if path[active_room_val]["boss_room"] and !path[active_room_val]["cleared"]:
+			#dialogue()
 	else:
 		next_level()
 		

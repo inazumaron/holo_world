@@ -84,6 +84,8 @@ func move(delta):
 func timer(delta):
 	duration -= delta
 	if duration <= 0:
+		if self in SkillHandler.projectiles:
+			SkillHandler.projectiles.erase(self)
 		queue_free()
 
 func getMidRange():
@@ -116,9 +118,13 @@ func _on_CollisionShape_body_entered(body):
 			play(death_anim)
 			queue_next = true
 		else:
+			if self in SkillHandler.projectiles:
+				SkillHandler.projectiles.erase(self)
 			queue_free()
 
 func _on_AnimatedSprite_animation_finished():
 	animation_finished = true
 	if queue_next:
+		if self in SkillHandler.projectiles:
+			SkillHandler.projectiles.erase(self)
 		queue_free()
