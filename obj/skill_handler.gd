@@ -16,18 +16,21 @@ func _process(delta):
 		set_process(false)
 	else:
 		for skill in states:
-			if "run" in states[skill]:
-				if states[skill]["run"]:
-					if skill == "134_hb":
-						hexBlast_spin(delta)
-			if "timer" in states[skill]:
-				if states[skill]["timer"] > 0:
-					states[skill]["timer"] -= delta
-				else:
-					if skill == "134_hb":
-						c134_hexBlast(states[skill]["source"], states[skill]["buffs"])
-					if skill == "134_he":
-						c134_hexBeam(states[skill]["source"], states[skill]["buffs"])
+			if source_exist(states[skill]["source"]):
+				if "run" in states[skill]:
+					if states[skill]["run"]:
+						if skill == "134_hb":
+							hexBlast_spin(delta)
+				if "timer" in states[skill]:
+					if states[skill]["timer"] > 0:
+						states[skill]["timer"] -= delta
+					else:
+						if skill == "134_hb":
+							c134_hexBlast(states[skill]["source"], states[skill]["buffs"])
+						if skill == "134_he":
+							c134_hexBeam(states[skill]["source"], states[skill]["buffs"])
+			else:
+				states.erase(skill)
 
 func activate_skill(source, buff, skill_code):
 	if skill_code == "c132_shield":
@@ -49,6 +52,13 @@ func change_room():		#Delete ongoing skills
 		
 	states.clear()
 	projectiles.clear()
+
+func source_exist(source):
+	var wr = weakref(source)
+	if wr.get_ref():
+		return true
+	else:
+		return false
 
 func c132_shield(source, preBuff):
 	var buff_spr = buff_sprite.instance()
@@ -78,7 +88,7 @@ func c134_scream(source, preBuff):
 
 func c134_hexBlast(source, buffs):
 	if not("134_hb" in states):
-		states["134_hb"] = {"state":0, "dir":[0,60,120,180,240,300], "timer":0.3, "obj":[], "ammo":4, "source":source, "buffs":buffs, "run":false}
+		states["134_hb"] = {"state":0, "dir":[0,60,120,180,240,300], "timer":0.3, "obj":[], "ammo":6, "source":source, "buffs":buffs, "run":false}
 		set_process(true)
 		#states: 0 - creating props, 1 - spinning and blasting, 2 - end
 	var vars = states["134_hb"]
@@ -101,9 +111,9 @@ func c134_hexBlast(source, buffs):
 			var temp_proj = proj_sprite.instance()
 			temp_proj.damage = source.ATTACK_DAMAGE
 			temp_proj.global_position = vars["obj"][i].global_position
-			temp_proj.velocity = 100 * Vector2(cos(deg2rad(vars["dir"][i])),sin(deg2rad(vars["dir"][i])))
+			temp_proj.velocity = 150 * Vector2(cos(deg2rad(vars["dir"][i])),sin(deg2rad(vars["dir"][i])))
 			temp_proj.acceleration = 100 * Vector2(cos(deg2rad(vars["dir"][i])),sin(deg2rad(vars["dir"][i])))
-			temp_proj.maxVelocity = 200 * Vector2(cos(deg2rad(vars["dir"][i])),sin(deg2rad(vars["dir"][i])))
+			temp_proj.maxVelocity = 300 * Vector2(cos(deg2rad(vars["dir"][i])),sin(deg2rad(vars["dir"][i])))
 			if source.is_in_group("player"):
 				temp_proj.add_to_group("player")
 				temp_proj.group = "player"

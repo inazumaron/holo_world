@@ -20,6 +20,7 @@ const boss_base = preload("res://enemies/boss.tscn")
 var boss_room = false
 const boss_dialogue = [["Nee...", "What do you think you're doing here", "You wanna die?"]]
 const boss_main = ["I see", "You want to take everything away from me huh", "Id like to see you try"]
+var boss_hp_ui = "temp"
 
 #Function/s
 func create_enemies():
@@ -99,6 +100,7 @@ func boss_room_setup():
 	enemy_cost = 0
 	var temp_boss = boss_base.instance()
 	temp_boss.position = Vector2.ZERO
+	temp_boss.hp_ui = boss_hp_ui
 	add_child(temp_boss)
 	enemy_list.append(temp_boss)
 

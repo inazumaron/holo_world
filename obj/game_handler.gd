@@ -208,6 +208,14 @@ func get_char_pos():
 		return curr_world_id.char2.global_position
 	if active_character == 2:
 		return curr_world_id.char3.global_position
+
+func get_boss_hp_ui():
+	if active_character == 0:
+		return curr_world_id.character.generate_boss_hp()
+	if active_character == 1:
+		return curr_world_id.char2.generate_boss_hp()
+	if active_character == 2:
+		return curr_world_id.char3.generate_boss_hp()
 #============================================  set var functions
 func set_next_step(x):
 	next_step = x

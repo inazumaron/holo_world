@@ -29,6 +29,7 @@ var dead = false
 var can_move = true
 var can_attack = true
 var anim_dir = 1 #1-right, -1 left
+var hp_ui
 
 onready var sprite = $RushiaSprite
 
@@ -93,7 +94,10 @@ func play(anim):
 	sprite.play(anim+temp_direction)
 
 func update_ui():
-	pass
+	if typeof(hp_ui) == 4:
+		hp_ui = GameHandler.get_boss_hp_ui()
+	print(hp_ui)
+	hp_ui.set_val((100 * HP)/ MAX_HP)
 
 func take_damage(damage, effect):
 	BuffHandler.damage_handler(damage, effect, buffs, self)
@@ -101,7 +105,7 @@ func take_damage(damage, effect):
 func damage(v):
 	if v > 0:
 		HP -= v
-		play("damage")
+		update_ui()
 		if HP <= 0:
 			dead = true
 

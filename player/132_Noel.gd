@@ -63,6 +63,8 @@ var ui_base = preload("res://ui/char_ui.tscn")
 var ui = null
 var item_base = preload("res://ui/item_ui.tscn")
 var item = null
+var bhp_base = preload("res://ui/boss_hp.tscn")
+var bhp = null
 
 var weapon_base = preload(WEAPON_PATH)
 var weapon = weapon_base.instance()
@@ -73,6 +75,8 @@ func _ready():
 	weapon.multipliers = multipliers
 	weapon.offsets = offsets
 	generate_ui()
+	
+	#var temp = generate_boss_hp()
 	
 	ui_manipulation(0)
 
@@ -249,3 +253,13 @@ func sgn(x):
 
 func get_dir():	#for skill handler to get mouse direction
 	return get_angle_to(get_global_mouse_position())
+
+func generate_boss_hp():
+	print("generating")
+	if bhp == null:
+		print("bhp generated")
+		bhp = bhp_base.instance()
+		bhp.z_index = 1
+		add_child(bhp)
+		bhp.position = Vector2(0, 250)
+	return bhp

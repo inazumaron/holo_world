@@ -167,8 +167,9 @@ func change_room():
 		
 		SkillHandler.change_room()
 		
-		#if path[active_room_val]["boss_room"] and !path[active_room_val]["cleared"]:
+		if path[active_room_val]["boss_room"] and !path[active_room_val]["cleared"]:
 			#dialogue()
+			active_room.boss_hp_ui = character.generate_boss_hp()
 	else:
 		next_level()
 		
