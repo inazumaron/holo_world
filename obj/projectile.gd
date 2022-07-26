@@ -18,7 +18,7 @@ var type = 0
 	#1 - parabolic
 var duration = 10
 	# how long projectile will stay in memory
-# ----------- parabolic extra vars
+# ----------- other options
 var parabolic = false
 var posFinal = Vector2.ZERO
 
@@ -26,6 +26,11 @@ var posFinal = Vector2.ZERO
 var spin = false
 var spin_rate = 0
 
+var ignore_collision = false
+
+var AoeBubble = false
+var AoeBubbleSize = 32
+var AoeBodies = []
 # ---------------------------------------------------------------------------------------------
 # Misc variables
 var dataLoaded = false
@@ -42,8 +47,17 @@ var queue_next = false		#mainly in ending animation, queue when finished
 signal EntityHit(damage, effect)
 
 func _ready():
+	if posFinal != Vector2.ZERO:
+		var d = posFinal - global_position
+		velocity = (d/duration) - (0.5 * acceleration * duration)
+	
 	if maxVelocity == Vector2.ZERO:
 		maxVelocity = velocity
+
+	if AoeBubble:
+		$AoeBubble/CollisionShape2D.shape.radius = AoeBubbleSize
+	else:
+		$AoeBubble/CollisionShape2D.shape.radius = 0
 
 func setData(data):
 	if "sprSize" in data:
@@ -68,7 +82,6 @@ func setData(data):
 		posFinal = data["posFinal"]
 	set_process(true)
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if !isProp:
 		move(delta)
@@ -93,7 +106,14 @@ func timer(delta):
 	if duration <= 0:
 		if self in SkillHandler.projectiles:
 			SkillHandler.projectiles.erase(self)
-		queue_free()
+		if death_anim != "":
+			set_process(false)
+			play(death_anim)
+			queue_next = true
+		if AoeBubble:
+			for body in AoeBodies:
+				self.connect("EntityHit",body,"take_damage")
+			emit_signal("EntityHit",damage, effects)
 
 func getMidRange():
 	return Vector2(posStart.x + .5 * (posFinal.x - posStart.x), posStart.y + .5 * (posFinal.y - posStart.y))
@@ -101,12 +121,15 @@ func getMidRange():
 func play(anim):
 	$AnimatedSprite.play(anim)
 	animation_finished = false
+	
+	if AoeBubble:
+		$AnimatedSprite.scale = Vector2(AoeBubbleSize/8,AoeBubbleSize/8)
 
 func play_next(anim):
 	next_animation = anim
 
 func _on_CollisionShape_body_entered(body):
-	if !isProp:
+	if !isProp and !ignore_collision:
 		var connected = true
 		
 		if body.has_method("take_damage"):
@@ -141,3 +164,14 @@ func _on_AnimatedSprite_animation_finished():
 		if self in SkillHandler.projectiles:
 			SkillHandler.projectiles.erase(self)
 		queue_free()
+
+func _on_AoeBubble_body_entered(body):
+	if AoeBubble:
+		if group == "player" and !body.is_in_group("player"):
+			AoeBodies.append(body)
+		if group == "enemy" and !body.is_in_group("enemy"):
+			AoeBodies.append(body)
+
+func _on_AoeBubble_body_exited(body):
+	if body in AoeBodies:
+		AoeBodies.erase(body)

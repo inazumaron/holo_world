@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=2]
+[gd_scene load_steps=34 format=2]
 
 [ext_resource path="res://obj/projectile.gd" type="Script" id=1]
 [ext_resource path="res://resc/c_rushia_attack.png" type="Texture" id=2]
@@ -29,25 +29,20 @@ flags = 4
 atlas = ExtResource( 2 )
 region = Rect2( 96, 64, 32, 32 )
 
-[sub_resource type="AtlasTexture" id=11]
+[sub_resource type="AtlasTexture" id=21]
 flags = 4
-atlas = ExtResource( 2 )
-region = Rect2( 0, 0, 32, 32 )
+atlas = ExtResource( 4 )
+region = Rect2( 0, 0, 16, 16 )
 
-[sub_resource type="AtlasTexture" id=12]
+[sub_resource type="AtlasTexture" id=22]
 flags = 4
-atlas = ExtResource( 2 )
-region = Rect2( 32, 0, 32, 32 )
+atlas = ExtResource( 4 )
+region = Rect2( 16, 0, 16, 16 )
 
-[sub_resource type="AtlasTexture" id=13]
+[sub_resource type="AtlasTexture" id=23]
 flags = 4
-atlas = ExtResource( 2 )
-region = Rect2( 64, 0, 32, 32 )
-
-[sub_resource type="AtlasTexture" id=14]
-flags = 4
-atlas = ExtResource( 2 )
-region = Rect2( 96, 0, 32, 32 )
+atlas = ExtResource( 4 )
+region = Rect2( 32, 0, 16, 16 )
 
 [sub_resource type="AtlasTexture" id=15]
 flags = 4
@@ -68,6 +63,26 @@ region = Rect2( 64, 32, 32, 32 )
 flags = 4
 atlas = ExtResource( 2 )
 region = Rect2( 96, 32, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=11]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 0, 0, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=12]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 32, 0, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=13]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 64, 0, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=14]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 96, 0, 32, 32 )
 
 [sub_resource type="AtlasTexture" id=20]
 flags = 4
@@ -94,20 +109,30 @@ flags = 4
 atlas = ExtResource( 2 )
 region = Rect2( 96, 96, 32, 32 )
 
-[sub_resource type="AtlasTexture" id=21]
+[sub_resource type="AtlasTexture" id=24]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 0, 0, 16, 16 )
+region = Rect2( 48, 0, 16, 16 )
 
-[sub_resource type="AtlasTexture" id=22]
+[sub_resource type="AtlasTexture" id=25]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 16, 0, 16, 16 )
+region = Rect2( 64, 0, 16, 16 )
 
-[sub_resource type="AtlasTexture" id=23]
+[sub_resource type="AtlasTexture" id=26]
 flags = 4
 atlas = ExtResource( 4 )
-region = Rect2( 32, 0, 16, 16 )
+region = Rect2( 80, 0, 16, 16 )
+
+[sub_resource type="AtlasTexture" id=27]
+flags = 4
+atlas = ExtResource( 4 )
+region = Rect2( 48, 16, 16, 16 )
+
+[sub_resource type="AtlasTexture" id=28]
+flags = 4
+atlas = ExtResource( 4 )
+region = Rect2( 64, 16, 16, 16 )
 
 [sub_resource type="SpriteFrames" id=19]
 animations = [ {
@@ -116,15 +141,20 @@ animations = [ {
 "name": "Rushia_orb_launch",
 "speed": 5.0
 }, {
-"frames": [ SubResource( 11 ), SubResource( 12 ), SubResource( 13 ), SubResource( 14 ) ],
+"frames": [ SubResource( 21 ), SubResource( 22 ), SubResource( 23 ) ],
 "loop": true,
-"name": "Rushia_orb_create",
-"speed": 4.0
+"name": "Pekora_bomb",
+"speed": 5.0
 }, {
 "frames": [ SubResource( 15 ), SubResource( 16 ), SubResource( 17 ), SubResource( 18 ) ],
 "loop": true,
 "name": "Rushia_orb_idle",
 "speed": 5.0
+}, {
+"frames": [ SubResource( 11 ), SubResource( 12 ), SubResource( 13 ), SubResource( 14 ) ],
+"loop": true,
+"name": "Rushia_orb_create",
+"speed": 4.0
 }, {
 "frames": [ SubResource( 20 ) ],
 "loop": true,
@@ -136,11 +166,14 @@ animations = [ {
 "name": "Rushia_orb_end",
 "speed": 5.0
 }, {
-"frames": [ SubResource( 21 ), SubResource( 22 ), SubResource( 23 ) ],
+"frames": [ SubResource( 24 ), SubResource( 25 ), SubResource( 26 ), SubResource( 27 ), SubResource( 28 ) ],
 "loop": true,
-"name": "Pekora_bomb",
-"speed": 5.0
+"name": "Pekora_bomb_explode",
+"speed": 10.0
 } ]
+
+[sub_resource type="CircleShape2D" id=29]
+radius = 32.0
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource( 1 )
@@ -156,7 +189,14 @@ shape = SubResource( 2 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 scale = Vector2( 2, 2 )
 frames = SubResource( 19 )
-animation = "Pekora_bomb"
+animation = "Pekora_bomb_explode"
+
+[node name="AoeBubble" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AoeBubble"]
+shape = SubResource( 29 )
 
 [connection signal="body_entered" from="CollisionShape" to="." method="_on_CollisionShape_body_entered"]
 [connection signal="animation_finished" from="AnimatedSprite" to="." method="_on_AnimatedSprite_animation_finished"]
+[connection signal="body_entered" from="AoeBubble" to="." method="_on_AoeBubble_body_entered"]
+[connection signal="body_exited" from="AoeBubble" to="." method="_on_AoeBubble_body_exited"]

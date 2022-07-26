@@ -36,4 +36,13 @@ func attack():
 	projectile_inst.position = get_global_position()
 	projectile_inst.rotation = rotation
 	projectile_inst.play("Pekora_bomb")
+	projectile_inst.death_anim = "Pekora_bomb_explode"
+	projectile_inst.spin = true
+	projectile_inst.spin_rate = 360
+	projectile_inst.parabolic = true
+	projectile_inst.group = "player"
+	projectile_inst.duration = 1
+	projectile_inst.posFinal = guide.global_position
+	projectile_inst.AoeBubble = true
+	projectile_inst.damage = 1
 	get_tree().get_root().add_child(projectile_inst)
