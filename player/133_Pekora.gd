@@ -4,12 +4,12 @@ extends KinematicBody2D
 var MAX_SPEED = 300
 var ACCELERATION = 1000
 var POS_UPDATE_TIMER = .1
-var MAX_HP = 10
-var HP = 10
+var MAX_HP = 6
+var HP = 6
 var DEF = 0 #0 by default, reduces damage by a flat amount. 
 
-var ATTACK_COOLDOWN = 1
-var ATTACK_STACK_COUNT = 2
+var ATTACK_COOLDOWN = 0.5
+var ATTACK_STACK_COUNT = 1
 var ATTACK_DAMAGE = 1
 var ATTACK_EFFECTS = []
 
@@ -20,8 +20,8 @@ var SPECIAL_EFFECTS = []
 
 var DAMAGE_ANIM_DUR = 0.2
 var ACTIVE = true			#for collab on field
-const WEAPON_PATH = "res://weapons/m_noel_mace.tscn"
-const CODE = 132
+const WEAPON_PATH = "res://weapons/i_pekora_bombs.tscn"
+const CODE = 133
 
 var can_move = true
 var can_attack = true
@@ -74,6 +74,7 @@ func _ready():
 	add_child(weapon)
 	weapon.multipliers = multipliers
 	weapon.offsets = offsets
+	weapon.position = Vector2(0,8)
 	generate_ui()
 	
 	#var temp = generate_boss_hp()

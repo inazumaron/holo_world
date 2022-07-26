@@ -50,6 +50,7 @@ var paused = false
 var dialogue_playing = false
 
 func _ready():
+	char_base = GameHandler.get_char_path(GameHandler.main_char)
 	seed(3)
 	set_process(false)
 	if level_seed == 0:
@@ -261,7 +262,7 @@ func generate_character():
 func compute_stats():
 	room_count = floor(pow(level,1.5)) + 5
 	max_level_size = ceil(room_count/2)+1
-	enemy_budget = 2*floor(pow(level,1.5))
+	enemy_budget = 5*floor(pow(level,1.5))
 
 func generate_path(r_count, max_size, l_seed): #room count and max size of map (nxn)
 	rand_seed(l_seed)

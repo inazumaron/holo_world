@@ -44,6 +44,7 @@ const screen_size = 24 #size range of blank blocks
 const room_size = 13 # size of walkable room
 const border = floor((screen_size-room_size)/2)
 const screen_offset = Vector2((screen_size/2)-border,(screen_size/2)-border)
+const obs_offset = Vector2(32, 32)
 
 var dialogue_playing = false
 var dialogue_page = 0
@@ -155,10 +156,10 @@ func generate_obstacles(data):
 				if i%2 == 1:
 					var a = data[i]
 					var b = data[i+1]
-					for x in range(a.x, b.x + 1):
-						for y in range(a.y, b.y + 1):
+					for x in range(a.x, b.x):
+						for y in range(a.y, b.y):
 							temp_obs = obs_base.instance()
-							temp_obs.position = (Vector2(x,y)-screen_offset)*64
+							temp_obs.position = (Vector2(x,y)-screen_offset)*64 + obs_offset
 							temp_obs.z_index = 1
 							add_child(temp_obs)
 							obs_list.append(temp_obs)

@@ -1,6 +1,12 @@
 extends Node2D
 #For holding variable values
 
+const char_paths = {
+	"130": preload("res://player/130_Flare.tscn"),
+	"132": preload("res://player/132_Noel.tscn"),
+	"133": preload("res://player/133_Pekora.tscn")
+}
+
 #Character related data
 var active_character = 0 #0- main, 1,2 collab
 var main_char = 132		#change later or not. by default noel will be main char rn
@@ -216,6 +222,13 @@ func get_boss_hp_ui():
 		return curr_world_id.char2.generate_boss_hp()
 	if active_character == 2:
 		return curr_world_id.char3.generate_boss_hp()
+
+func get_char_path(x):
+	if typeof(x) ==  TYPE_STRING:
+		return char_paths[x]
+	else:
+		return char_paths[str(x)]
+
 #============================================  set var functions
 func set_next_step(x):
 	next_step = x
@@ -225,3 +238,6 @@ func set_level_val(val):
 	
 func set_world_id(id):
 	curr_world_id = id
+
+func set_main_char(x):
+	main_char = x

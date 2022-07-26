@@ -35,6 +35,8 @@ func _process(delta):
 		prev_selected = selected
 		
 	if Input.is_action_just_pressed("ui_accept"):
+		GameHandler.set_main_char(selected.value)
+		#print(sele)
 		GameHandler.change_handler(self,"route")
 
 func generate_cards():

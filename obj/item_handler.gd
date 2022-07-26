@@ -2,8 +2,8 @@ extends Node
 
 const blank = {"name":"Blank","type":"none"}
 var item1 = {"name":"Nakirium", "type":"Stack", "effect":"Buff", "stack_count":3, "effect_details":{"heal": [5, 0]}}
-var item2 = {"name":"Kiara's feather", "type":"Passive", "effect":"Buff", 
-		"effect_details":{"revive": [1, 1, 1], "source":"item", "source_details":"Kiara's feather"}}
+var item2 = {"name":"Asacoco", "type":"Stack", "effect":"Buff", "stack_count":3, 
+		"effect_details":{"strong": [2, 15, 0, "bg"],"tough": [1, 15, 0, "bg"]}}
 
 var item_r_cooldown = [1,1]	#for room type cooldowns, turns to 1 on next not cleared room, 0 when used
 var item_cooldowns = [0,0]	#for cooldowns not room type, process will handle this part

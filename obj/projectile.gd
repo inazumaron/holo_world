@@ -19,7 +19,12 @@ var type = 0
 var duration = 10
 	# how long projectile will stay in memory
 # ----------- parabolic extra vars
+var parabolic = false
 var posFinal = Vector2.ZERO
+
+#spin projectile
+var spin = false
+var spin_rate = 0
 
 # ---------------------------------------------------------------------------------------------
 # Misc variables
@@ -37,9 +42,8 @@ var queue_next = false		#mainly in ending animation, queue when finished
 signal EntityHit(damage, effect)
 
 func _ready():
-	pass
-	#if !isProp:
-		#set_process(false)
+	if maxVelocity == Vector2.ZERO:
+		maxVelocity = velocity
 
 func setData(data):
 	if "sprSize" in data:
@@ -73,6 +77,9 @@ func _process(delta):
 	if next_animation != "" and animation_finished:
 		play(next_animation)
 		next_animation = ""
+		
+	if spin:
+		$AnimatedSprite.rotation_degrees += delta*spin_rate
 	
 func move(delta):
 	position += velocity * delta
@@ -100,11 +107,16 @@ func play_next(anim):
 
 func _on_CollisionShape_body_entered(body):
 	if !isProp:
+		var connected = true
+		
 		if body.has_method("take_damage"):
 			var can_damage = false
 			if group == "player":
 				if body.is_in_group("enemy") or body.is_in_group("neutral"):
 					can_damage = true
+				else:
+					connected = false
+					
 			if group == "enemy":
 				if body.is_in_group("player") or body.is_in_group("neutral"):
 					can_damage = true
@@ -113,14 +125,15 @@ func _on_CollisionShape_body_entered(body):
 				self.connect("EntityHit",body,"take_damage")
 				emit_signal("EntityHit",damage, effects)
 			
-		if death_anim != "":
-			set_process(false)
-			play(death_anim)
-			queue_next = true
-		else:
-			if self in SkillHandler.projectiles:
-				SkillHandler.projectiles.erase(self)
-			queue_free()
+		if connected:
+			if death_anim != "":
+				set_process(false)
+				play(death_anim)
+				queue_next = true
+			else:
+				if self in SkillHandler.projectiles:
+					SkillHandler.projectiles.erase(self)
+				queue_free()
 
 func _on_AnimatedSprite_animation_finished():
 	animation_finished = true
