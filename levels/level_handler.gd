@@ -45,9 +45,12 @@ var char_base = preload("res://player/132_Noel.tscn")
 var room_base = preload(room_path)
 var door_base = preload("res://levels/door.tscn")
 var minimap_base = preload("res://ui/minimap.tscn")
+var recruit_base = preload("res://obj/char_recruit.tscn")
 var paused = false
 
 var dialogue_playing = false
+var recruiting = false
+var recruit_obj
 
 func _ready():
 	char_base = GameHandler.get_char_path(GameHandler.main_char)
@@ -94,10 +97,8 @@ func _process(delta):
 			
 	if Input.is_action_just_pressed("ui_accept"):
 		if paused:
-			paused = false
 			unpause()
 		else:
-			paused = true
 			pause()
 			
 	if dialogue_playing:
@@ -309,11 +310,13 @@ func dialogue():
 func pause():
 	active_room.pause()
 	character.ACTIVE = false
+	paused = true
 	print("paused")
 
 func unpause():
 	active_room.unpause()
 	character.ACTIVE = true
+	paused = false
 	print("resumed")
 
 func update_player_items(x,y,l1,l2):
@@ -322,3 +325,27 @@ func update_player_items(x,y,l1,l2):
 		char2.ui_item_update_anim(x,y,l1,l2)
 	if char3 != null:
 		char3.ui_item_update_anim(x,y,l1,l2)
+
+func recruit_ui():
+	if char2 == null or char3 == null:
+		pause()
+		recruit_obj = recruit_base.instance()
+		recruiting = true
+		var temp_codes = active_room.recruit_char_codes
+		var temp_paths = active_room.recruit_char_paths
+		
+		if character.CODE in temp_codes:
+			var i = temp_codes.find(character.CODE,0)
+			temp_codes.remove(i)
+			temp_paths.remove(i)
+		
+		if char2 != null:
+			if char2.CODE in temp_codes:
+				var i = temp_codes.find(character.CODE,0)
+				temp_codes.remove(i)
+				temp_paths.remove(i)
+		
+		recruit_obj.card_paths = temp_paths
+		recruit_obj.card_vals = temp_codes
+		recruit_obj.scale = Vector2(0.4,0.4)
+		add_child(recruit_obj)

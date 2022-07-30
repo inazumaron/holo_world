@@ -2,8 +2,7 @@ extends Node
 
 const blank = {"name":"Blank","type":"none"}
 var item1 = {"name":"Nakirium", "type":"Stack", "effect":"Buff", "stack_count":3, "effect_details":{"heal": [5, 0]}}
-var item2 = {"name":"Asacoco", "type":"Stack", "effect":"Buff", "stack_count":3, 
-		"effect_details":{"strong": [2, 15, 0, "bg"],"tough": [1, 15, 0, "bg"]}}
+var item2 = {"name":"Ticket", "type":"Single_use", "effect":"Recruit"}
 
 var item_r_cooldown = [1,1]	#for room type cooldowns, turns to 1 on next not cleared room, 0 when used
 var item_cooldowns = [0,0]	#for cooldowns not room type, process will handle this part
@@ -121,12 +120,22 @@ func process_passives(item):
 		print("added ",temp_buff)
 
 func t_single_use(x):
-	activate_item(x)
+	var temp
 	if x:
-		item2 = null
+		temp = item2.duplicate(true)
 	else:
-		item1 = null
+		temp = item1.duplicate(true)
 	
+	activate_item(x)
+	
+	if x:
+		if item2["name"] == temp["name"]:
+			item2 = blank
+	else:
+		if item1["name"] == temp["name"]:
+			item1 = blank
+	update_items()
+
 func t_stack(x):
 	activate_item(x)
 	if x:
@@ -183,10 +192,17 @@ func e_buff(x):
 		BuffHandler.add_buff(temp_buff)
 	
 func e_recruit(x):
-	pass
+	GameHandler.recruit()
 	
 func e_skill(x):
 	pass
+
+func add_item(name):
+	if item1["name"] == "Blank":
+		item1 = item_list[name].duplicate(true)
+	elif item2["name"] == "Blank":
+		item2 = item_list[name].duplicate(true)
+	update_items()
 
 func update_items():
 	var labels = ["",""]
@@ -202,6 +218,7 @@ func remove_item(name):
 	elif item2.name == name:
 		item2 = blank
 	update_items()
+
 #Item idea dump
 #	Mic					-	passive, doubles voice related attacks/skills effects and range
 #	Rabbits foot		-	passive, improves move speed, increases luck

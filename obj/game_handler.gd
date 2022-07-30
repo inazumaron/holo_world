@@ -190,6 +190,24 @@ func update_item(x,y,l1,l2):
 	#x and y contains strings, with the name of the new item
 	curr_world_id.update_player_items(x,y,l1,l2)
 
+func pause_game():
+	curr_world_id.pause()
+
+func recruit(): #open recruit system in level
+	if !co_2_active:	#check if can recruit
+		curr_world_id.recruit_ui()
+
+func recruit_char(code): #recruit character
+	if co_1_active:
+		co_2_active = true
+		co_char_2 = code
+		active_character = 2
+	else:
+		co_1_active = true
+		co_char_1 = code
+		active_character = 1
+	ItemHandler.add_item(str(code))
+
 #============================================  get var funcitons
 func get_char_stat(n):
 	if n == main_char:

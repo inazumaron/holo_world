@@ -17,6 +17,12 @@ const obs_base = preload("res://levels/obstacle_small.tscn")
 const e_1_1 = preload("res://enemies/gy_zombie_basic.tscn")
 const boss_base = preload("res://enemies/boss.tscn")
 
+const chp_1 = preload("res://resc/cards/char_card_flare.png")
+const chp_2 = preload("res://resc/cards/char_card_noel.png")
+const chp_3 = preload("res://resc/cards/char_card_pekora.png")
+const recruit_char_codes = [130,132,133]
+const recruit_char_paths = [chp_1,chp_2,chp_3]
+
 var boss_room = false
 const boss_dialogue = [["Nee...", "What do you think you're doing here", "You wanna die?"]]
 const boss_main = ["I see", "You want to take everything away from me huh", "Id like to see you try"]

@@ -20,6 +20,8 @@ var duration = 10
 	# how long projectile will stay in memory
 # ----------- other options
 var parabolic = false
+var parabolic_half_duration = 0
+var parabolic_scale_rate = 2
 var posFinal = Vector2.ZERO
 
 #spin projectile
@@ -58,6 +60,9 @@ func _ready():
 		$AoeBubble/CollisionShape2D.shape.radius = AoeBubbleSize
 	else:
 		$AoeBubble/CollisionShape2D.shape.radius = 0
+	
+	if parabolic:
+		parabolic_half_duration = float(duration)/2
 
 func setData(data):
 	if "sprSize" in data:
@@ -93,6 +98,12 @@ func _process(delta):
 		
 	if spin:
 		$AnimatedSprite.rotation_degrees += delta*spin_rate
+		
+	if parabolic:
+		if duration > parabolic_half_duration:
+			$AnimatedSprite.scale += delta * Vector2(parabolic_scale_rate, parabolic_scale_rate)
+		else:
+			$AnimatedSprite.scale -= delta * Vector2(parabolic_scale_rate, parabolic_scale_rate)
 	
 func move(delta):
 	position += velocity * delta
