@@ -37,15 +37,15 @@ const item_list = {
 		{"name":"Ao chan", "type":"Unlimited", "effect":"Skill", "cooldown":"room", "skill_name":""},
 #-------------------------------------Character portraits portion
 	"130":
-		{"name":"130", "type":"switch"},
+		{"name":"130", "type":"Switch"},
 	"131":
-		{"name":"131", "type":"switch"},
+		{"name":"131", "type":"Switch"},
 	"132":
-		{"name":"132", "type":"switch"},
+		{"name":"132", "type":"Switch"},
 	"133":
-		{"name":"133", "type":"switch"},
+		{"name":"133", "type":"Switch"},
 	"134":
-		{"name":"134", "type":"switch"},
+		{"name":"134", "type":"Switch"},
 }
 
 func item_details():
@@ -160,12 +160,17 @@ func t_unlimited(x):
 				item_cooldowns[x] = item2["cooldown_duration"]
 	
 func t_switch(x):
-	var temp = {"name":str(GameHandler.get_active_char()), "type":"switch"}
+	var temp = {"name":str(GameHandler.get_active_char()), "type":"Switch"}
+	var code
 	#do something here
 	if x:
+		GameHandler.switch_character(int(item2["name"]))
 		item2 = temp
 	else:
+		GameHandler.switch_character(int(item1["name"]))
 		item1 = temp
+	
+	update_items()
 
 func activate_item(x):
 	if x:
@@ -198,11 +203,22 @@ func e_skill(x):
 	pass
 
 func add_item(name):
+	var temp = 2
+	
 	if item1["name"] == "Blank":
 		item1 = item_list[name].duplicate(true)
+		temp = 0
 	elif item2["name"] == "Blank":
 		item2 = item_list[name].duplicate(true)
+		temp = 1
 	update_items()
+	
+	if !temp:
+		if item1["type"] == "Switch":
+			use_item(0)
+	else:
+		if item2["type"] == "Switch":
+			use_item(1)
 
 func update_items():
 	var labels = ["",""]

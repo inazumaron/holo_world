@@ -69,3 +69,7 @@ const boss_level = {
 #to do
 #knockback check if source alive
 #pekora bomb explodes on impact
+
+#last thing done
+#working on character switching, level_handler has now a func change_active_unit
+#which game handler should call wehn using switch character

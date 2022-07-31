@@ -212,6 +212,7 @@ func activate(x):
 		self.visible = false
 		$CollisionShape2D.disabled = true
 		ui.visible = false
+		movement = Vector2.ZERO
 
 func setCamera(x):
 	$Camera2D.current = x

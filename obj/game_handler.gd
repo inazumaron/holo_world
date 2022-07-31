@@ -83,22 +83,6 @@ func move():
 	return pos
 
 #============================================  level/character handling
-func return_player_path(code):
-	if code == 0:
-		code = main_char
-	if code == 130:	#flare
-		pass
-		#return preload("res://PlayerEntity/char_Flare.tscn")
-	elif code == 131:	#marine
-		return ""
-	elif code == 132:	#noel
-		return preload("res://player/132_Noel.tscn")
-	elif code == 133:	#pekora
-		pass
-		#return preload("res://PlayerEntity/char_Pekora.tscn")
-	elif code == 134:	#rushia
-		return ""
-
 func is_char_blank(n):
 	if n == main_char:
 		if main_char_stats["CHAR_CODE"] == 0:
@@ -201,12 +185,24 @@ func recruit_char(code): #recruit character
 	if co_1_active:
 		co_2_active = true
 		co_char_2 = code
-		active_character = 2
+		curr_world_id.load_unit(2, char_paths[str(code)])
 	else:
 		co_1_active = true
 		co_char_1 = code
-		active_character = 1
+		curr_world_id.load_unit(1, char_paths[str(code)])
 	ItemHandler.add_item(str(code))
+
+func switch_character(code):
+	var temp = active_character
+	
+	if main_char == code:
+		active_character = 0
+	if co_char_1 == code:
+		active_character = 1
+	if co_char_2 == code:
+		active_character = 2
+	
+	curr_world_id.change_active_unit(active_character, temp)
 
 #============================================  get var funcitons
 func get_char_stat(n):

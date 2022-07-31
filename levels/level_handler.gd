@@ -42,6 +42,9 @@ var prev_char2
 var prev_char3
 
 var char_base = preload("res://player/132_Noel.tscn")
+var char2_base
+var char3_base
+
 var room_base = preload(room_path)
 var door_base = preload("res://levels/door.tscn")
 var minimap_base = preload("res://ui/minimap.tscn")
@@ -54,6 +57,10 @@ var recruit_obj
 
 func _ready():
 	char_base = GameHandler.get_char_path(GameHandler.main_char)
+	if GameHandler.co_1_active:
+		char2_base = GameHandler.get_char_path(GameHandler.co_char_1)
+	if GameHandler.co_2_active:
+		char3_base = GameHandler.get_char_path(GameHandler.co_char_2)
 	seed(3)
 	set_process(false)
 	if level_seed == 0:
@@ -349,3 +356,41 @@ func recruit_ui():
 		recruit_obj.card_vals = temp_codes
 		recruit_obj.scale = Vector2(0.4,0.4)
 		add_child(recruit_obj)
+
+func load_unit(dest, obj):	#For getting preloaded data
+	#mainly used for recruiting characters mid room, so needing to preload midway
+	if dest == 0:#this case shouldnt happen
+		char_base = obj
+	if dest == 1:
+		char2_base = obj
+		char2 = char2_base.instance()
+		add_child(char2)
+	if dest == 2:
+		char3_base = obj
+		char3 = char3_base.instance()
+		add_child(char3)
+
+func change_active_unit(x,y): #x - new unit, y - old unit
+	var pos
+	if y == 0:
+		pos = character.position
+	if y == 1:
+		pos = char2.position
+	if y == 2:
+		pos = char3.position
+	
+	character.activate(false)
+	if char2 != null:
+		char2.activate(false)
+	if char3 != null:
+		char3.activate(false)
+		
+	if x == 0:
+		character.activate(true)
+		character.position = pos
+	if x == 1:
+		char2.activate(true)
+		char2.position = pos
+	if x == 2:
+		char3.activate(true)
+		char3.position = pos
