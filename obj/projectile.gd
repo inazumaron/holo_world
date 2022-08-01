@@ -35,6 +35,7 @@ var AoeBubbleSize = 32
 var AoeBodies = []
 # ---------------------------------------------------------------------------------------------
 # Misc variables
+var BODY_TYPE = "projectile"
 var dataLoaded = false
 var group = "" #will react to opposite group + neutral
 	
@@ -154,6 +155,8 @@ func _on_CollisionShape_body_entered(body):
 			if group == "enemy":
 				if body.is_in_group("player") or body.is_in_group("neutral"):
 					can_damage = true
+				else:
+					connected = false
 					
 			if can_damage:
 				self.connect("EntityHit",body,"take_damage")

@@ -18,6 +18,7 @@ var MOVE_COOLDOWN = 3
 const IS_BOSS = true
 var buffs = {}
 #-------------------------------
+var BODY_TYPE = "enemy_boss"
 var move_counter = 1
 var move_state = false
 var attack_counter = 1

@@ -30,6 +30,7 @@ var movement = Vector2.ZERO
 var anim_dir = 1 #1-right, -1 left
 var last_anim_dir = 0 #0 - left, 1 - right
 var IS_BOSS = false		#for checking skill usage between player and boss
+var BODY_TYPE = "player_character"
 
 #------------------------ Timers
 var pos_timer = 0	#update position for game

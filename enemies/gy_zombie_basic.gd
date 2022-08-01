@@ -17,6 +17,7 @@ const CHASER = 1			# 1 - chases player, -1 - movement not affected by player, 0 
 const MAX_HP = 3
 const DEF = 0
 
+var BODY_TYPE = "enemy_mob"
 var buffs = {"passive":{"weight":1}}		#place all active buffs/debuffs here, should not be directly altered, as values are shared between all
 var buff_timers = {}
 var EFFECTS = {}			#for offensive statuses, damage bonus, inflict poison, etc

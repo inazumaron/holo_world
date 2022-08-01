@@ -45,4 +45,5 @@ func attack():
 	projectile_inst.posFinal = guide.global_position
 	projectile_inst.AoeBubble = true
 	projectile_inst.damage = 1
+	projectile_inst.ignore_collision = true
 	get_tree().get_root().add_child(projectile_inst)

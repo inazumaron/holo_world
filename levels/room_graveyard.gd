@@ -12,7 +12,14 @@ const tile = {
 	"path":0, "up":2, "wall":4, "blank":6, "left":8, "right":10, "down":12, "uleft": 14, "uright":16, "wleft":18,
 	"wright":20, "lleft":22, "lright":24}
 const enemy_data = [
-	{"name":"zombie_basic","level":1,"cost":1}]
+	{"name":"zombie_basic","level":1,"cost":1}
+	]
+const hazard_data = [
+	{"name":"gy_vines_","level":1, "cost":1, "vars":2, "data":{
+		"onEntry":true, "damage":1
+	}},
+	{"name":"gy_swamp_", "level":1, "cost":1, "vars":2}
+]
 const obs_base = preload("res://levels/obstacle_small.tscn")
 const e_1_1 = preload("res://enemies/gy_zombie_basic.tscn")
 const boss_base = preload("res://enemies/boss.tscn")
@@ -51,6 +58,7 @@ const room_size = 13 # size of walkable room
 const border = floor((screen_size-room_size)/2)
 const screen_offset = Vector2((screen_size/2)-border,(screen_size/2)-border)
 const obs_offset = Vector2(32, 32)
+const hazard_base = preload("res://obj/level_hazards.tscn")
 
 var dialogue_playing = false
 var dialogue_page = 0
@@ -62,8 +70,10 @@ var next_dialogue_click = false				#enable clicking to go to next dialogue page
 var cleared = false
 var enemy_cost = 0
 var room_seed = 0
+var hazard_cost = 3
 var enemy_bases = []
 var enemy_list = []
+var hazard_list = []
 var obs_list = []
 var level = 1
 var rng = RandomNumberGenerator.new()
@@ -77,6 +87,7 @@ func _ready():
 	rng.seed  = room_seed
 	create_room()
 	preload_items()
+	generate_hazards()
 	if !cleared:
 		create_enemies()
 		set_process(true)
@@ -170,6 +181,20 @@ func generate_obstacles(data):
 							add_child(temp_obs)
 							obs_list.append(temp_obs)
 	gen_enemy_pos(data)
+
+func generate_hazards():
+	while hazard_cost > 0:
+		var pos = Vector2((randi()%room_size-3)+2,(randi()%room_size-3)+2)
+		var hazard = hazard_base.instance()
+		var h_data = hazard_data[randi()%hazard_data.size()]
+		var variant = ""
+		if "vars" in h_data:
+			variant = str((randi()%h_data["vars"])+1)
+		hazard.position = pos * 32
+		hazard.play(h_data["name"]+variant)
+		hazard_list.append(hazard)
+		add_child(hazard)
+		hazard_cost -= h_data["cost"]
 
 func gen_enemy_pos(data):
 	enemy_pos = []

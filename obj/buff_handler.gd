@@ -63,24 +63,25 @@ func sec_timer():
 
 func realtime_handler(delta): # For buffs that need to be applied realtime
 	for i in realtime_buffs:
-		if i["type"] == "knockback":
-			var temp_w
-			if "weight" in i:
-				temp_w = i["weight"]
-			else:
-				temp_w = 1
-			var res = knockback_handler(i["node"],i["details"], temp_w)
-			if res:
-				var source
-				if is_player(i["node"]):
-					source = get_p_index(i["node"])
-					char_nodes[source]["buffs"].erase(i["source_buff"])
-					char_nodes[source]["node"].buffs = char_nodes[source]["buffs"]
+		if source_exist(i["node"]):
+			if i["type"] == "knockback":
+				var temp_w
+				if "weight" in i:
+					temp_w = i["weight"]
 				else:
-					source = get_e_index(i["node"])
-					enemy_nodes[source]["buffs"].erase(i["source_buff"])
-					enemy_nodes[source]["node"].buffs = enemy_nodes[source]["buffs"]
-				realtime_buffs.erase(i)
+					temp_w = 1
+				var res = knockback_handler(i["node"],i["details"], temp_w)
+				if res:
+					var source
+					if is_player(i["node"]):
+						source = get_p_index(i["node"])
+						char_nodes[source]["buffs"].erase(i["source_buff"])
+						char_nodes[source]["node"].buffs = char_nodes[source]["buffs"]
+					else:
+						source = get_e_index(i["node"])
+						enemy_nodes[source]["buffs"].erase(i["source_buff"])
+						enemy_nodes[source]["node"].buffs = enemy_nodes[source]["buffs"]
+					realtime_buffs.erase(i)
 	
 func temp_buff_handler(delta):
 	for i in temp_buffs:
@@ -349,3 +350,9 @@ func room_update():		#when changing rooms, refreshes room delayed buffs
 				for k in room_delayed_buffs:
 					if k in i["buffs"][j]:
 						i["buffs"][j][k][2] = false
+
+func source_exist(source):
+	var res = weakref(source)
+	if !res.get_ref():
+		return false
+	return true

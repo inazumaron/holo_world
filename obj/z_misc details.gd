@@ -66,10 +66,22 @@ const boss_level = {
 	#10		-	same as main character, 7 + 2 enemy budget 
 }
 
-#to do
-#knockback check if source alive
-#pekora bomb explodes on impact
+const BODY_TYPE = [ #for kinematic bodies, to help identify
+	"player_character",
+	"projectile",
+	"enemy_boss",
+	"enemy_mob"
+]
 
-#last thing done
-#working on character switching, level_handler has now a func change_active_unit
-#which game handler should call wehn using switch character
+#to do
+#level hazards, set positions to place
+#knockback check if source alive
+#show damage numbers
+#item usage bigger sfx on use
+#randomize obstacles
+
+#New enemy concepts
+#Graveyard
+#Fandead with crystal - long buildup, shoots laser deals continious damage at a direction
+#Deadbeat portal - spawns deadbeat skulls (slow, 1hp, charges when close)
+#Zomrade big fat - tank, aoe very slow
