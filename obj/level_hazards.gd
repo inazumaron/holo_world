@@ -75,23 +75,23 @@ func damageBody(body):
 func _on_AreaRect_body_entered(body):
 	if body.is_in_group("player") and body.has_method("take_damage"):
 		RectBodies.append(body)
-	if shape == "rect" and onEntry:
-		damageBody(body)
+		if shape == "rect" and onEntry:
+			damageBody(body)
 
 func _on_AreaRect_body_exited(body):
 	if body in RectBodies:
 		RectBodies.erase(body)
-	if shape == "rect" and onExit:
-		damageBody(body)
+		if shape == "rect" and onExit:
+			damageBody(body)
 
 func _on_AreaCircle_body_entered(body):
 	if body.is_in_group("player") and body.has_method("take_damage"):
 		CircleBodies.append(body)
-	if shape == "circle" and onEntry:
-		damageBody(body)
+		if shape == "circle" and onEntry:
+			damageBody(body)
 
 func _on_AreaCircle_body_exited(body):
 	if body in CircleBodies:
 		CircleBodies.erase(body)
-	if shape == "circle" and onExit:
-		damageBody(body)
+		if shape == "circle" and onExit:
+			damageBody(body)

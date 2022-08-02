@@ -75,9 +75,7 @@ const BODY_TYPE = [ #for kinematic bodies, to help identify
 ]
 
 #to do
-#level hazards, set positions to place
-#knockback check if source alive
-#show damage numbers
+#knockback, lasting too long
 #item usage bigger sfx on use
 #randomize obstacles
 

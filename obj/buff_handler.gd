@@ -32,6 +32,7 @@ const room_delayed_buffs = ["heal_pr"] #just update this
 var timers = {'sec':0}
 
 const buff_spr_base = preload("res://obj/buff_effect.tscn")
+const text_base = preload("res://obj/text_obj.tscn")
 
 func _ready():
 	set_process(false)
@@ -108,6 +109,17 @@ func temp_buff_handler(delta):
 			i['node'].add_child(buff_sprite)
 			i['sprite'] = buff_sprite
 
+func display_damage(pos,dam):
+	var text = text_base.instance()
+	var data = {"bold":true, "color":"red", "align":"center"}
+	var pos_offset = Vector2(0, -16)
+	text.set_properties(data)
+	text.set_text(str(dam))
+	text.position = pos
+	text.timer = 0.5
+	get_tree().get_root().add_child(text)
+	text.display()
+
 func damage_handler(damage, effects, buffs, source):
 	if !effects.empty():
 		update_buffs(effects, source)
@@ -136,6 +148,7 @@ func damage_handler(damage, effects, buffs, source):
 						buffs[tempShield[0]]["sprite"].play("n_shield_2")
 		else:
 			source.damage(dam)
+			display_damage(source.position, dam)
 			if source.HP <= 0:
 				var temp = find_buff(source.buffs, "revive")
 				if temp.size() > 0:
@@ -195,7 +208,6 @@ func update_buffs(effects, source):
 	temp = find_buff(effects, "quick")	#"quick": ["aspd", "duration", "party", "behaviour"]
 	if temp.size() > 0:
 		for i in temp:
-			print(effects," ",i)
 			var temp2 = {"node":source, "details":{"anim":"ATTACK_COOLDOWN", "stat":"ATTACK_COOLDOWN", "offsets":0, "multiplier":effects[i]["quick"][0]},
 				"timer":effects[i]["quick"][1], "applied":false, "party":effects[i]["quick"][2], "behaviour":effects[i]["quick"][3]}
 			temp_buffs.append(temp2)
@@ -203,7 +215,6 @@ func update_buffs(effects, source):
 	temp = find_buff(effects, "slow")	#"slow": ["slow", "duration", "party", "behaviour"]
 	if temp.size() > 0:
 		for i in temp:
-			print(effects," ",i)
 			var temp2 = {"node":source, "details":{"anim":"slow", "stat":"MAX_SPEED", "offsets":0, "multiplier":effects[i]["slow"][0]},
 				"timer":effects[i]["slow"][1], "applied":false, "party":effects[i]["slow"][2], "behaviour":effects[i]["slow"][3]}
 			temp_buffs.append(temp2)
