@@ -1,5 +1,9 @@
 extends Node
 
+#For reference in creating buff:
+#{name:unique_buff_name, buffs: [ buff details ]}
+#WARNING: make sure the unique_buff_name does not contain buff names (i.e "slow", "quick", etc as it will be detected in find_buff)
+
 var char_nodes = []		#points to character ids
 var enemy_nodes = []	#when enemy gets buff_debuff, add here then remove when done
 # data format: { 'node': string, 'buffs': [ {'buff name': val}] }
@@ -100,7 +104,7 @@ func temp_buff_handler(delta):
 			i['node'].multipliers[i['details']['stat']] *= i['details']['multiplier']
 			i['node'].offsets[i['details']['stat']] += i['details']['offsets']
 			var buff_sprite = buff_spr_base.instance()
-			buff_sprite.play(i['details']['stat'])
+			buff_sprite.play(i['details']['anim'])
 			i['node'].add_child(buff_sprite)
 			i['sprite'] = buff_sprite
 
@@ -170,29 +174,38 @@ func update_buffs(effects, source):
 	temp = find_buff(effects, "fast")	#"fast": ["speed", "duration", "party", "behaviour"],
 	if temp.size() > 0:
 		for i in temp:
-			var temp2 = {"node":source, "details":{"stat":"MAX_SPEED", "offsets":0, "multiplier":effects[i]["fast"][0]},
+			var temp2 = {"node":source, "details":{"anim":"MAX_SPEED", "stat":"MAX_SPEED", "offsets":0, "multiplier":effects[i]["fast"][0]},
 				"timer":effects[i]["fast"][1], "applied":false, "party":effects[i]["fast"][2], "behaviour":effects[i]["fast"][3]}
 			temp_buffs.append(temp2)
 	
 	temp = find_buff(effects, "tough")	#"tough": ["def", "duration", "party", "behaviour"],
 	if temp.size() > 0:
 		for i in temp:
-			var temp2 = {"node":source, "details":{"stat":"DEF", "offsets":effects[i]["tough"][0], "multiplier":1},
+			var temp2 = {"node":source, "details":{"anim":"DEF", "stat":"DEF", "offsets":effects[i]["tough"][0], "multiplier":1},
 				"timer":effects[i]["tough"][1], "applied":false, "party":effects[i]["tough"][2], "behaviour":effects[i]["tough"][3]}
 			temp_buffs.append(temp2)
 	
 	temp = find_buff(effects, "strong")	#"strong": ["damage", "duration", "party", "behaviour"]
 	if temp.size() > 0:
 		for i in temp:
-			var temp2 = {"node":source, "details":{"stat":"ATTACK_DAMAGE", "offsets":0, "multiplier":effects[i]["strong"][0]},
+			var temp2 = {"node":source, "details":{"anim":"ATTACK_DAMAGE", "stat":"ATTACK_DAMAGE", "offsets":0, "multiplier":effects[i]["strong"][0]},
 				"timer":effects[i]["strong"][1], "applied":false, "party":effects[i]["strong"][2], "behaviour":effects[i]["strong"][3]}
 			temp_buffs.append(temp2)
 	
 	temp = find_buff(effects, "quick")	#"quick": ["aspd", "duration", "party", "behaviour"]
 	if temp.size() > 0:
 		for i in temp:
-			var temp2 = {"node":source, "details":{"stat":"ATTACK_COOLDOWN", "offsets":0, "multiplier":effects[i]["quick"][0]},
+			print(effects," ",i)
+			var temp2 = {"node":source, "details":{"anim":"ATTACK_COOLDOWN", "stat":"ATTACK_COOLDOWN", "offsets":0, "multiplier":effects[i]["quick"][0]},
 				"timer":effects[i]["quick"][1], "applied":false, "party":effects[i]["quick"][2], "behaviour":effects[i]["quick"][3]}
+			temp_buffs.append(temp2)
+	
+	temp = find_buff(effects, "slow")	#"slow": ["slow", "duration", "party", "behaviour"]
+	if temp.size() > 0:
+		for i in temp:
+			print(effects," ",i)
+			var temp2 = {"node":source, "details":{"anim":"slow", "stat":"MAX_SPEED", "offsets":0, "multiplier":effects[i]["slow"][0]},
+				"timer":effects[i]["slow"][1], "applied":false, "party":effects[i]["slow"][2], "behaviour":effects[i]["slow"][3]}
 			temp_buffs.append(temp2)
 	
 	stat_update(source)
@@ -295,6 +308,7 @@ func add_buff(buff):
 	#Get target character, will only add, effects will be applied with sec timer
 	for i in char_nodes:
 		if i["node"].CODE == GameHandler.get_active_char():
+			print(buff)
 			update_buffs(buff, i["node"])
 
 func knockback_handler(source, knockback, weight):	#if returns true, knockback done, else ongoing

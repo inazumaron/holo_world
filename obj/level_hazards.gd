@@ -35,7 +35,22 @@ func _process(delta):
 		timer = 1
 
 func set_data(data):
-	pass
+	if "onEntry" in data:
+		onEntry = data["onEntry"]
+	if "onExit" in data:
+		onExit = data["onExit"]
+	if "continious" in data:
+		continious = data["continious"]
+	if "damage" in data:
+		damage = data["damage"]
+	if "effects" in data:
+		effects = data["effects"]
+	if "shape" in data:
+		shape = data["shape"]
+	if "destructible" in data:
+		destructible = data["destructible"]
+	if "HP" in data:
+		HP = data["HP"]
 
 func play(anim):
 	$AnimatedSprite.play(anim)
@@ -55,7 +70,7 @@ func damageCircle():
 func damageBody(body):
 	if ACTIVE:
 		self.connect("damageBodies",body,"take_damage")
-		emit_signal("damageBodies")
+		emit_signal("damageBodies", damage, effects)
 
 func _on_AreaRect_body_entered(body):
 	if body.is_in_group("player") and body.has_method("take_damage"):

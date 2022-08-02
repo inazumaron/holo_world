@@ -18,7 +18,9 @@ const hazard_data = [
 	{"name":"gy_vines_","level":1, "cost":1, "vars":2, "data":{
 		"onEntry":true, "damage":1
 	}},
-	{"name":"gy_swamp_", "level":1, "cost":1, "vars":2}
+	{"name":"gy_swamp_", "level":1, "cost":1, "vars":2, "data":{
+		"onEntry":true, "continious":true, "effects":{"name":"swampSlow", "buffs":{"slow":[0.5, 1, 1, "bg"]}}
+	}}
 ]
 const obs_base = preload("res://levels/obstacle_small.tscn")
 const e_1_1 = preload("res://enemies/gy_zombie_basic.tscn")
@@ -193,6 +195,7 @@ func generate_hazards():
 		hazard.position = pos * 32
 		hazard.play(h_data["name"]+variant)
 		hazard_list.append(hazard)
+		hazard.set_data(h_data["data"])
 		add_child(hazard)
 		hazard_cost -= h_data["cost"]
 

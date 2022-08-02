@@ -1,7 +1,8 @@
 extends Node
 
 const blank = {"name":"Blank","type":"none"}
-var item1 = {"name":"Nakirium", "type":"Stack", "effect":"Buff", "stack_count":3, "effect_details":{"heal": [5, 0]}}
+var item1 = {"name":"Watson concoction", "type":"Stack", "effect":"Buff", "stack_count":5, 
+		"effect_details":{"quick": [.6, 20, 0, "temp"], "fast": [1.5, 20, 0, "temp"]}}
 var item2 = {"name":"Ticket", "type":"Single_use", "effect":"Recruit"}
 
 var item_r_cooldown = [1,1]	#for room type cooldowns, turns to 1 on next not cleared room, 0 when used

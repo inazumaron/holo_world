@@ -15,18 +15,18 @@ const debuff = {
 	#stun, sleep, freeze, stuck keeps player from switching
 	#poison and burn can still apply in background
 	#knockback and slow gets passed when switching
-	"knockback": ["power","direction"], #power can be interpreted as speed but also decays over time so also counts as duration 
-	"poison": ["damage", "duration"],
-	"burn": ["damage", "duration"],
-	"slow": ["slow", "duration"], #slow value is between  0 - 1, act as multiplier to actual speed
-	"stun": ["duration"],
-	"sleep": ["duration"],
-	"stuck": ["duration"],
-	"freeze": ["damage", "duration"],
+	"knockback": ["power","direction", "party", "behaviour"], #power can be interpreted as speed but also decays over time so also counts as duration 
+	"poison": ["damage", "duration", "party", "behaviour"],
+	"burn": ["damage", "duration", "party", "behaviour"],
+	"slow": ["slow", "duration", "party", "behaviour"], #slow value is between  0 - 1, act as multiplier to actual speed
+	"stun": ["duration", "party", "behaviour"],
+	"sleep": ["duration", "party", "behaviour"],
+	"stuck": ["duration", "party", "behaviour"],
+	"freeze": ["damage", "duration", "party", "behaviour"],
 }
 
 const buff = { 
-	# party means buff applies to whole party
+	# party means buff applies to whole party  (0 - not apply, 1 - applies to all)
 	#behaviour is string, applies for those with duration: 
 	#	'pause' - duration pauses when inactive, 
 	#	'temp' - buff disappears when inactive, 
@@ -64,6 +64,7 @@ const boss_level = {
 	#8		-	7 + 0.25 enemy budget
 	#9		-	7 + 0.5 enemy budget
 	#10		-	same as main character, 7 + 2 enemy budget 
+	"end":0
 }
 
 const BODY_TYPE = [ #for kinematic bodies, to help identify
@@ -85,3 +86,7 @@ const BODY_TYPE = [ #for kinematic bodies, to help identify
 #Fandead with crystal - long buildup, shoots laser deals continious damage at a direction
 #Deadbeat portal - spawns deadbeat skulls (slow, 1hp, charges when close)
 #Zomrade big fat - tank, aoe very slow
+
+#last thing done
+#added hazard generation, now needs to set hazard data in the blank function in hazard object, 
+#was setting up data field in hazard_data for this
