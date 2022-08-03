@@ -75,7 +75,7 @@ const BODY_TYPE = [ #for kinematic bodies, to help identify
 ]
 
 #to do
-#knockback, lasting too long
+#switching characters bug when changing room
 #item usage bigger sfx on use
 #randomize obstacles
 

@@ -189,6 +189,7 @@ func update_buffs(effects, source):
 		for i in temp:
 			var temp2 = {"node":source, "details":{"anim":"MAX_SPEED", "stat":"MAX_SPEED", "offsets":0, "multiplier":effects[i]["fast"][0]},
 				"timer":effects[i]["fast"][1], "applied":false, "party":effects[i]["fast"][2], "behaviour":effects[i]["fast"][3]}
+			print("appended to temp_buff ",temp2)
 			temp_buffs.append(temp2)
 	
 	temp = find_buff(effects, "tough")	#"tough": ["def", "duration", "party", "behaviour"],
@@ -319,7 +320,7 @@ func add_buff(buff):
 	#Get target character, will only add, effects will be applied with sec timer
 	for i in char_nodes:
 		if i["node"].CODE == GameHandler.get_active_char():
-			print(buff)
+			print("added to ", i["node"].CODE)
 			update_buffs(buff, i["node"])
 
 func knockback_handler(source, knockback, weight):	#if returns true, knockback done, else ongoing
@@ -328,7 +329,7 @@ func knockback_handler(source, knockback, weight):	#if returns true, knockback d
 		source.apply_movement(timers[str(source)+"_knockback"])
 		source.anim_dir = -source.sgn(source.movement.x)
 		source.movement = source.move_and_slide(source.movement)
-		timers[str(source)+"_knockback"]  *= pow(0.95, weight)
+		timers[str(source)+"_knockback"]  *= pow(0.5, weight)
 		if timers[str(source)+"_knockback"] <= 1:
 			timers.erase(str(source)+"_knockback")
 			return true

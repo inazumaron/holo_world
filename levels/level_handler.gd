@@ -81,7 +81,6 @@ func _process(delta):
 		
 	if character == null:
 		generate_character()
-		character.generate_minimap(path, active_room_val)
 		ItemHandler.process_passive_proc()
 		
 	if active_room.cleared and door_list.size() == 0:
@@ -246,6 +245,7 @@ func generate_character():
 	character = char_base.instance()
 	character.position = char_pos_set()
 	add_child(character)
+	character.generate_minimap(path, active_room_val)
 	if char_data[0] != null:
 		character.update_data(char_data[0])
 	else:
@@ -256,12 +256,14 @@ func generate_character():
 		char2 = char_base.instance()
 		char2.position = char_pos_set()
 		add_child(char2)
+		char2.generate_minimap(path, active_room_val)
 		char2.update_data(char_data[1])
 		BuffHandler.add_character(char2)
 	if char_data[2] != null:
 		char3 = char_base.instance()
 		char3.position = char_pos_set()
 		add_child(char3)
+		char3.generate_minimap(path, active_room_val)
 		char3.update_data(char_data[2])
 		BuffHandler.add_character(char3)
 		
@@ -315,15 +317,33 @@ func dialogue():
 	dialogue_playing = true
 
 func pause():
+	var active_char = GameHandler.get_active_char()
 	active_room.pause()
-	character.ACTIVE = false
+	if character.CODE == active_char:
+		character.ACTIVE = false
+	if char2 != null:
+		if char2.CODE == active_char:
+			char2.ACTIVE = false
+	if char3 != null:
+		if char3.CODE == active_char:
+			char3.ACTIVE = false
 	paused = true
+	ItemHandler.set_process(false)
 	print("paused")
 
 func unpause():
+	var active_char = GameHandler.get_active_char()
 	active_room.unpause()
-	character.ACTIVE = true
+	if character.CODE == active_char:
+		character.ACTIVE = true
+	if char2 != null:
+		if char2.CODE == active_char:
+			char2.ACTIVE = true
+	if char3 != null:
+		if char3.CODE == active_char:
+			char3.ACTIVE = true
 	paused = false
+	ItemHandler.set_process(true)
 	print("resumed")
 
 func update_player_items(x,y,l1,l2):
@@ -365,10 +385,15 @@ func load_unit(dest, obj):	#For getting preloaded data
 		char2_base = obj
 		char2 = char2_base.instance()
 		add_child(char2)
+		char2.generate_minimap(path, active_room_val)
+		BuffHandler.add_character(char2)
 	if dest == 2:
 		char3_base = obj
 		char3 = char3_base.instance()
 		add_child(char3)
+		char3.generate_minimap(path, active_room_val)
+		BuffHandler.add_character(char3)
+	unpause()
 
 func change_active_unit(x,y): #x - new unit, y - old unit
 	var pos
