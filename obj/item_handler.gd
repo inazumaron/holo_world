@@ -2,7 +2,7 @@ extends Node
 
 const blank = {"name":"Blank","type":"none"}
 var item1 = {"name":"Watson concoction", "type":"Stack", "effect":"Buff", "stack_count":5, 
-		"effect_details":{"quick": [.6, 20, 0, "temp"], "fast": [1.5, 20, 0, "temp"]}}
+		"effect_details":{"quick": [.6, 20, 0, "temp"], "fast": [1.5, 20, 1, "temp"]}}
 var item2 = {"name":"Ticket", "type":"Single_use", "effect":"Recruit"}
 
 var item_r_cooldown = [1,1]	#for room type cooldowns, turns to 1 on next not cleared room, 0 when used
@@ -23,7 +23,7 @@ const item_list = {
 		"effect_details":{"heal": [5, 0]}},
 	"Watson concoction":
 		{"name":"Watson concoction", "type":"Stack", "effect":"Buff", "stack_count":5, 
-		"effect_details":{"quick": [.6, 20, 0, "temp"], "fast": [1.5, 20, 0, "temp"]}},
+		"effect_details":{"quick": [.6, 20, 0, "temp"], "fast": [1.5, 20, 1, "temp"]}},
 	"Asacoco":
 		{"name":"Asacoco", "type":"Stack", "effect":"Buff", "stack_count":3, 
 		"effect_details":{"strong": [2, 15, 0, "bg"],"tough": [1, 15, 0, "bg"]}},
@@ -36,7 +36,7 @@ const item_list = {
 		{"name":"Ame's Watch", "type":"Unlimited", "effect":"Skill", "cooldown":"room", "skill_name":""},
 	"Ao chan":
 		{"name":"Ao chan", "type":"Unlimited", "effect":"Skill", "cooldown":"room", "skill_name":""},
-#-------------------------------------Character portraits portion
+	#-------------------------------------Character portraits portion
 	"130":
 		{"name":"130", "type":"Switch"},
 	"131":

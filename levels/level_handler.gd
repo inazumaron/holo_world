@@ -253,14 +253,14 @@ func generate_character():
 	BuffHandler.add_character(character)
 	
 	if char_data[1] != null:
-		char2 = char_base.instance()
+		char2 = char2_base.instance()
 		char2.position = char_pos_set()
 		add_child(char2)
 		char2.generate_minimap(path, active_room_val)
 		char2.update_data(char_data[1])
 		BuffHandler.add_character(char2)
 	if char_data[2] != null:
-		char3 = char_base.instance()
+		char3 = char3_base.instance()
 		char3.position = char_pos_set()
 		add_child(char3)
 		char3.generate_minimap(path, active_room_val)

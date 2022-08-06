@@ -16,6 +16,7 @@ var ATTACK_COOLDOWN = 4
 var MOVE_DURATION = 1
 var MOVE_COOLDOWN = 3
 const IS_BOSS = true
+const ACTIVE = true
 var buffs = {}
 #-------------------------------
 var BODY_TYPE = "enemy_boss"

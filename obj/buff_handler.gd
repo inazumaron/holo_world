@@ -4,6 +4,11 @@ extends Node
 #{name:unique_buff_name, buffs: [ buff details ]}
 #WARNING: make sure the unique_buff_name does not contain buff names (i.e "slow", "quick", etc as it will be detected in find_buff)
 
+var char_party_buffs = [ #Party buffs that characters give when inactive
+	{ "name" : "133_3", "buffs" : [{"critRate": [10, -1, 1, "perm"]}]}
+]
+#Format: { name: code_tier, buffs : [ {buff : val} ] }
+
 var char_nodes = []		#points to character ids
 var enemy_nodes = []	#when enemy gets buff_debuff, add here then remove when done
 # data format: { 'node': string, 'buffs': [ {'buff name': val}] }
@@ -26,7 +31,9 @@ var party_buffs = []
 #			depending on type:, applied: bool, timer: 
 #for buffs affecting whole party
 
-const room_delayed_buffs = ["heal_pr"] #just update this
+const room_delayed_buffs = ["heal_pr"] 
+#just update this, this contains list of buffs to apply at start of room. 
+
 #sec timer deals with buffs that is applied every second, i.e. poison, DoT stuff, HoT
 
 var timers = {'sec':0}
@@ -93,21 +100,27 @@ func temp_buff_handler(delta):
 		if !is_instance_valid(i['node']):
 			temp_buffs.erase(i)
 			continue
-		if i['applied']:
-			i['timer'] -= delta
-			if i['timer'] <= 0:
-				i['node'].multipliers[i['details']['stat']] /= i['details']['multiplier']
-				i['node'].offsets[i['details']['stat']] -= i['details']['offsets']
-				i['sprite'].queue_free()
-				temp_buffs.erase(i)
-		else:
-			i['applied'] = true
-			i['node'].multipliers[i['details']['stat']] *= i['details']['multiplier']
-			i['node'].offsets[i['details']['stat']] += i['details']['offsets']
-			var buff_sprite = buff_spr_base.instance()
-			buff_sprite.play(i['details']['anim'])
-			i['node'].add_child(buff_sprite)
-			i['sprite'] = buff_sprite
+		if i['node'].ACTIVE or i['behaviour'] == "bg" or i['party']:
+			if i['applied']:
+				i['timer'] -= delta
+				if i['timer'] <= 0:
+					i['node'].multipliers[i['details']['stat']] /= i['details']['multiplier']
+					i['node'].offsets[i['details']['stat']] -= i['details']['offsets']
+					i['sprite'].queue_free()
+					temp_buffs.erase(i)
+			else:
+				i['applied'] = true
+				i['node'].multipliers[i['details']['stat']] *= i['details']['multiplier']
+				i['node'].offsets[i['details']['stat']] += i['details']['offsets']
+				var buff_sprite = buff_spr_base.instance()
+				buff_sprite.play(i['details']['anim'])
+				i['node'].add_child(buff_sprite)
+				i['sprite'] = buff_sprite
+		elif i['behaviour'] == "temp":
+			i['node'].multipliers[i['details']['stat']] /= i['details']['multiplier']
+			i['node'].offsets[i['details']['stat']] -= i['details']['offsets']
+			i['sprite'].queue_free()
+			temp_buffs.erase(i)
 
 func display_damage(pos,dam):
 	var text = text_base.instance()
@@ -168,6 +181,10 @@ func update_buffs(effects, source):
 		char_nodes[i]['buffs'][effects["name"]] = effects["buffs"]
 		var x = char_nodes[i]['node']
 		x.buffs = char_nodes[i]['buffs']
+		if !("for_party" in effects):
+			var temp_pb = buff_applies_to_party(effects)
+			if !temp_pb["buffs"].empty():
+				apply_buff_to_party(temp_pb, source)
 	else:
 		var i = get_e_index(source)
 		enemy_nodes[i]['buffs'][effects["name"]] = effects["buffs"]
@@ -189,7 +206,6 @@ func update_buffs(effects, source):
 		for i in temp:
 			var temp2 = {"node":source, "details":{"anim":"MAX_SPEED", "stat":"MAX_SPEED", "offsets":0, "multiplier":effects[i]["fast"][0]},
 				"timer":effects[i]["fast"][1], "applied":false, "party":effects[i]["fast"][2], "behaviour":effects[i]["fast"][3]}
-			print("appended to temp_buff ",temp2)
 			temp_buffs.append(temp2)
 	
 	temp = find_buff(effects, "tough")	#"tough": ["def", "duration", "party", "behaviour"],
@@ -221,6 +237,21 @@ func update_buffs(effects, source):
 			temp_buffs.append(temp2)
 	
 	stat_update(source)
+
+func buff_applies_to_party(arg_buff):
+	#finds and returns buffs that affect the whole party
+	var temp_party_buff = {"name":arg_buff["name"]+"_party", "buffs":{}, "for_party":true}
+	for buff_i in arg_buff["buffs"]:
+		if buff_i in ["fast", "tough", "strong", "quick", "slow", "regen", "critRate", "critDmg"]:
+			if arg_buff["buffs"][buff_i][2] == 1:
+				temp_party_buff["buffs"][buff_i] = arg_buff["buffs"][buff_i].duplicate()
+	return temp_party_buff
+
+func apply_buff_to_party(buff, source):
+	if char_nodes.size() > 1:
+		for char_n in char_nodes:
+			if char_n["node"] != source:
+				update_buffs(buff, char_n["node"])
 	
 func stat_update(source):
 	var effects = source.buffs
@@ -262,8 +293,9 @@ func stat_update(source):
 func find_buff(buff_list, buff_name):
 	var res = []
 	for i in buff_list:
-		if buff_name in buff_list[i]:
-			res.append(i)
+		if typeof(buff_list[i]) != TYPE_BOOL:
+			if buff_name in buff_list[i]:
+				res.append(i)
 	return res
 
 func find_buff_list(buff_list, buff_names):
@@ -320,7 +352,6 @@ func add_buff(buff):
 	#Get target character, will only add, effects will be applied with sec timer
 	for i in char_nodes:
 		if i["node"].CODE == GameHandler.get_active_char():
-			print("added to ", i["node"].CODE)
 			update_buffs(buff, i["node"])
 
 func knockback_handler(source, knockback, weight):	#if returns true, knockback done, else ongoing

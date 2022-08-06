@@ -31,6 +31,7 @@ const buff = {
 	#	'pause' - duration pauses when inactive, 
 	#	'temp' - buff disappears when inactive, 
 	#	'bg' - buff duration continues in bg
+	#	'perm' - permanent
 	
 	"fast": ["speed", "duration", "party", "behaviour"],		#multiplier
 	"tough": ["def", "duration", "party", "behaviour"],			#direct add to def
@@ -75,16 +76,11 @@ const BODY_TYPE = [ #for kinematic bodies, to help identify
 ]
 
 #to do
-#switching characters bug when changing room
 #item usage bigger sfx on use
+#Flare piercing arrow
+#Pekora drop TNT
 #randomize obstacles
 
-#New enemy concepts
-#Graveyard
-#Fandead with crystal - long buildup, shoots laser deals continious damage at a direction
-#Deadbeat portal - spawns deadbeat skulls (slow, 1hp, charges when close)
-#Zomrade big fat - tank, aoe very slow
-
 #last thing done
-#added hazard generation, now needs to set hazard data in the blank function in hazard object, 
-#was setting up data field in hazard_data for this
+#party wide buffs search and apply
+#background buff behaviours

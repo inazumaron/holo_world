@@ -16,7 +16,7 @@ const portrait_base = preload("res://obj/charSel_portrait.tscn")
 var card_path = [c_130, c_131, c_132, c_133, c_134]
 var card_list = []
 var portrait
-var selected
+var selected = null
 var prev_selected = null
 
 func _ready():
@@ -35,9 +35,9 @@ func _process(delta):
 		prev_selected = selected
 		
 	if Input.is_action_just_pressed("ui_accept"):
-		GameHandler.set_main_char(selected.value)
-		#print(sele)
-		GameHandler.change_handler(self,"route")
+		if selected != null:
+			GameHandler.set_main_char(selected.value)
+			GameHandler.change_handler(self,"route")
 
 func generate_cards():
 	for i in range(0, card_path.size()):
