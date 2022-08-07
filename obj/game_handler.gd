@@ -204,6 +204,15 @@ func switch_character(code):
 	
 	curr_world_id.change_active_unit(active_character, temp)
 
+func generate_char_sfx(sfx_name):
+	var source
+	if active_character == 0:
+		source = curr_world_id.character
+	if active_character == 1:
+		source = curr_world_id.char2
+	if active_character == 2:
+		source = curr_world_id.char3
+	curr_world_id.generate_sfx(sfx_name, source)
 #============================================  get var funcitons
 func get_char_stat(n):
 	if n == main_char:

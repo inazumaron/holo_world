@@ -49,6 +49,7 @@ var room_base = preload(room_path)
 var door_base = preload("res://levels/door.tscn")
 var minimap_base = preload("res://ui/minimap.tscn")
 var recruit_base = preload("res://obj/char_recruit.tscn")
+var sfx_base = preload("res://obj/buff_effect.tscn")
 var paused = false
 
 var dialogue_playing = false
@@ -419,3 +420,10 @@ func change_active_unit(x,y): #x - new unit, y - old unit
 	if x == 2:
 		char3.activate(true)
 		char3.position = pos
+
+func generate_sfx(sfx_name, source):
+	var sfx_obj = sfx_base.instance()
+	sfx_obj.play(sfx_name)
+	sfx_obj.position = source.position
+	sfx_obj.free_after = true
+	get_tree().get_root().add_child(sfx_obj)

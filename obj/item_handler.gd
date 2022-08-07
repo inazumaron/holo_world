@@ -120,6 +120,10 @@ func process_passives(item):
 		BuffHandler.add_buff(temp_buff)
 		print("added ",temp_buff)
 
+func play_intro(item_name):
+	var sfx_name = item_name + "_intro"
+	GameHandler.generate_char_sfx(sfx_name)
+
 func t_single_use(x):
 	var temp
 	if x:
@@ -140,10 +144,12 @@ func t_single_use(x):
 func t_stack(x):
 	activate_item(x)
 	if x:
+		play_intro(item2["name"])
 		item2["stack_count"] -= 1
 		if item2["stack_count"] <= 0:
 			item2 = blank
 	else:
+		play_intro(item1["name"])
 		item1["stack_count"] -= 1
 		if item1["stack_count"] <= 0:
 			item1 = blank
