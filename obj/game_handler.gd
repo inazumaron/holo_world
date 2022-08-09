@@ -76,8 +76,6 @@ func move():
 	if next_step == "right":
 		pos.y -= 1
 		pos.x = int(pos.x + 1) % MAX_LEVELS
-	print("moved ",next_step)
-	print(pos)
 	next_step = "none"
 	level += 1
 	return pos

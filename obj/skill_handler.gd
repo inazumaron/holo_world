@@ -7,9 +7,11 @@ extends Node
 const buff_sprite = preload("res://obj/buff_effect.tscn") 
 const area_effect = preload("res://obj/sfx_effect.tscn")
 const proj_sprite = preload("res://obj/projectile.tscn")
+const doodad_base = preload("res://obj/doodad.tscn")
 
 var states = {}		#For skills with multiple stages, use this as reference
 var projectiles = []	#For handling root created projectiles, mainly in deleting when moving to next room
+var doodads = []		#for handling created doodads
 
 func _process(delta):
 	if states.empty():
@@ -33,14 +35,7 @@ func _process(delta):
 				states.erase(skill)
 
 func activate_skill(source, buff, skill_code):
-	if skill_code == "c132_shield":
-		c132_shield(source, buff)
-	if skill_code == "c134_scream":
-		c134_scream(source, buff)
-	if skill_code == "c134_hexBlast":
-		c134_hexBlast(source, buff)
-	if skill_code == "c134_hexBeam":
-		c134_hexBeam(source, buff)
+	call(skill_code,source,buff)
 
 func change_room():		#Delete ongoing skills
 	for i in states:
@@ -67,6 +62,21 @@ func c132_shield(source, preBuff):
 	source.add_child(buff_spr)
 	var temp = {"shield": [3, -1, 1, "none"], "sprite": buff_spr}
 	BuffHandler.add_buff({"name": "noel shield", "buffs":temp})
+
+func c133_tntBarrel(source, buffs):
+	var barrel = doodad_base.instance()
+	barrel.damage_on_death = true
+	barrel.damage = 5
+	barrel.anim_on_death = "tnt_barrel_explode"
+	barrel.destructible = true
+	barrel.timer = 5
+	barrel.add_to_group("neutral")
+	barrel.position = source.position
+	barrel.animation_to_grow = "tnt_barrel_explode"
+	barrel.animation_growth_rate = 2
+	barrel.group = "player"
+	get_tree().get_root().add_child(barrel)
+	barrel.play("tnt_barrel_idle")
 
 func c134_scream(source, preBuff):
 	var temp = area_effect.instance()

@@ -13,7 +13,7 @@ var ATTACK_STACK_COUNT = 1
 var ATTACK_DAMAGE = 1
 var ATTACK_EFFECTS = []
 
-var SPECIAL_CODE = "c132_shield"
+var SPECIAL_CODE = "c133_tntBarrel"
 var SPECIAL_COOLDOWN = 1
 var SPECIAL_REGEN_TYPE = 0 #0 - auto, 1 - offensive, 2 - defensive
 var SPECIAL_EFFECTS = []
