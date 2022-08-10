@@ -55,6 +55,21 @@ func source_exist(source):
 	else:
 		return false
 
+func c130_piercingShot(source, buffs):
+	var arrow = proj_sprite.instance()
+	var weapon = source.weapon
+	if source.is_in_group("player"):
+		arrow.group = "player"
+	else:
+		arrow.group = "enemy"
+	arrow.damage = 2
+	arrow.rotation = weapon.rotation
+	arrow.position = weapon.bow_tip.get_global_position()
+	arrow.velocity = Vector2(2* weapon.arrow_speed,0).rotated(weapon.rotation)
+	arrow.piercing = true
+	get_tree().get_root().add_child(arrow)
+	arrow.play("Flare_arrow")
+
 func c132_shield(source, preBuff):
 	var buff_spr = buff_sprite.instance()
 	buff_spr.play("n_shield_0")

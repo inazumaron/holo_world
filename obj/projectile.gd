@@ -28,7 +28,8 @@ var posFinal = Vector2.ZERO
 var spin = false
 var spin_rate = 0
 
-var ignore_collision = false
+var ignore_collision = false	#does not damage on body enter
+var piercing = false			#damages on body enter but only frees after duration
 
 var AoeBubble = false
 var AoeBubbleSize = 32
@@ -115,7 +116,7 @@ func move(delta):
 
 func timer(delta):
 	duration -= delta
-	if duration <= 0:
+	if duration <= 0 and duration != -1:
 		if self in SkillHandler.projectiles:
 			SkillHandler.projectiles.erase(self)
 		if death_anim != "":
@@ -126,6 +127,7 @@ func timer(delta):
 			for body in AoeBodies:
 				self.connect("EntityHit",body,"take_damage")
 			emit_signal("EntityHit",damage, effects)
+		duration = -1
 
 func getMidRange():
 	return Vector2(posStart.x + .5 * (posFinal.x - posStart.x), posStart.y + .5 * (posFinal.y - posStart.y))
@@ -161,8 +163,9 @@ func _on_CollisionShape_body_entered(body):
 			if can_damage:
 				self.connect("EntityHit",body,"take_damage")
 				emit_signal("EntityHit",damage, effects)
+				self.disconnect("EntityHit",body,"take_damage")
 			
-		if connected:
+		if connected and !piercing:
 			if death_anim != "":
 				set_process(false)
 				play(death_anim)

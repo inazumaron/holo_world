@@ -9,6 +9,7 @@ var offsets
 var damage = 1
 
 const proj_base = preload("res://obj/projectile.tscn")
+onready var bow_tip = $Bow_tip
 
 func _ready():
 	state = "idle"
