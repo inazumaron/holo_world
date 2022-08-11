@@ -102,6 +102,7 @@ func _process(delta):
 	for i in range(0, enemy_list.size()):
 		if enemy_list[i].dead:
 			BuffHandler.enemy_dead(enemy_list[i])
+			GameHandler.add_xp(enemy_list[i].XP)
 			enemy_list[i].queue_free()
 			enemy_list.remove(i)
 			break

@@ -18,6 +18,7 @@ var MOVE_COOLDOWN = 3
 const IS_BOSS = true
 const ACTIVE = true
 var buffs = {}
+var XP = 100
 #-------------------------------
 var BODY_TYPE = "enemy_boss"
 var move_counter = 1

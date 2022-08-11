@@ -11,13 +11,20 @@ const char_paths = {
 var active_character = 0 #0- main, 1,2 collab
 var main_char = 132		#change later or not. by default noel will be main char rn
 var main_char_stats = {"CHAR_CODE":0, "HP": 0, "BUFFS":{}, "SPECIAL_CODE":0}
+var main_char_level = {"EXP":0, "LVL":1}
 	#Special code will just simply correspond to ability ID, 0 means no skill
 var co_1_active = false
 var co_char_1 = 0
-var co_char_1_stats = main_char_stats
+var co_char_1_stats = main_char_stats.duplicate(true)
+var co_char_1_level = {"EXP":0, "LVL":1}
 var co_2_active = false
 var co_char_2 = 0
-var co_char_2_stats = main_char_stats
+var co_char_2_stats = main_char_stats.duplicate(true)
+var co_char_2_level = {"EXP":0, "LVL":1}
+
+const xp_vals = [100, 150, 225, 325, 450, 575, 725, 900, 1100, 1350]	
+	#needed amount of xp to level up, index indicate current level + 1
+	#xp given by enemy scales with their costs, boss gives 100 + (level - 1) * 50
 
 var item1 = "pekora_collab"
 var item2 = "flare_collab"
@@ -211,6 +218,25 @@ func generate_char_sfx(sfx_name):
 	if active_character == 2:
 		source = curr_world_id.char3
 	curr_world_id.generate_sfx(sfx_name, source)
+
+func add_xp(xp):
+	var res
+	if active_character == 0:
+		res = calc_xp(main_char_level, xp)
+	if active_character == 1:
+		res = calc_xp(co_char_1_level, xp)
+	if active_character == 2:
+		res = calc_xp(co_char_2_level, xp)
+	print(res)
+
+func calc_xp(data, xp):
+	data["EXP"] += xp
+	var level_ups = 0
+	while data["EXP"] >= xp_vals[data["LVL"] - 1]:
+		data["EXP"] -= xp_vals[data["LVL"] - 1]
+		data["LVL"] += 1
+		level_ups += 1
+	return [data, level_ups]
 #============================================  get var funcitons
 func get_char_stat(n):
 	if n == main_char:

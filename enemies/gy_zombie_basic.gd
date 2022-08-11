@@ -5,6 +5,7 @@ const FIRE_TIMER = 2 #delay before
 const ACCELERATION = 1000
 const MAX_SPEED = 100
 const COST = 0.5
+const XP = 2
 const TO_PLAYER = true
 const ATTACK_DAMAGE = 1
 const ATTACK_COOLDOWN = 1
