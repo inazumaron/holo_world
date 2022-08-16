@@ -23,16 +23,6 @@ flags = 4
 atlas = ExtResource( 2 )
 region = Rect2( 192, 128, 64, 64 )
 
-[sub_resource type="AtlasTexture" id=31]
-flags = 4
-atlas = ExtResource( 2 )
-region = Rect2( 256, 192, 64, 64 )
-
-[sub_resource type="AtlasTexture" id=32]
-flags = 4
-atlas = ExtResource( 2 )
-region = Rect2( 320, 192, 64, 64 )
-
 [sub_resource type="AtlasTexture" id=33]
 flags = 4
 atlas = ExtResource( 2 )
@@ -83,16 +73,6 @@ flags = 4
 atlas = ExtResource( 2 )
 region = Rect2( 320, 0, 64, 64 )
 
-[sub_resource type="AtlasTexture" id=43]
-flags = 4
-atlas = ExtResource( 2 )
-region = Rect2( 256, 128, 64, 64 )
-
-[sub_resource type="AtlasTexture" id=44]
-flags = 4
-atlas = ExtResource( 2 )
-region = Rect2( 320, 128, 64, 64 )
-
 [sub_resource type="AtlasTexture" id=45]
 flags = 4
 atlas = ExtResource( 2 )
@@ -123,16 +103,31 @@ flags = 4
 atlas = ExtResource( 2 )
 region = Rect2( 320, 64, 64, 64 )
 
+[sub_resource type="AtlasTexture" id=43]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 256, 128, 64, 64 )
+
+[sub_resource type="AtlasTexture" id=44]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 320, 128, 64, 64 )
+
+[sub_resource type="AtlasTexture" id=31]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 256, 192, 64, 64 )
+
+[sub_resource type="AtlasTexture" id=32]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 320, 192, 64, 64 )
+
 [sub_resource type="SpriteFrames" id=25]
 animations = [ {
 "frames": [ SubResource( 27 ), SubResource( 28 ), SubResource( 29 ), SubResource( 30 ) ],
 "loop": true,
 "name": "idle_right",
-"speed": 5.0
-}, {
-"frames": [ SubResource( 31 ), SubResource( 32 ) ],
-"loop": true,
-"name": "damage_left",
 "speed": 5.0
 }, {
 "frames": [ SubResource( 33 ), SubResource( 34 ), SubResource( 35 ), SubResource( 36 ) ],
@@ -145,14 +140,19 @@ animations = [ {
 "name": "walk_right",
 "speed": 5.0
 }, {
+"frames": [ SubResource( 45 ), SubResource( 46 ), SubResource( 47 ), SubResource( 48 ), SubResource( 49 ), SubResource( 50 ) ],
+"loop": true,
+"name": "walk_left",
+"speed": 5.0
+}, {
 "frames": [ SubResource( 43 ), SubResource( 44 ) ],
 "loop": true,
 "name": "damage_right",
 "speed": 5.0
 }, {
-"frames": [ SubResource( 45 ), SubResource( 46 ), SubResource( 47 ), SubResource( 48 ), SubResource( 49 ), SubResource( 50 ) ],
+"frames": [ SubResource( 31 ), SubResource( 32 ) ],
 "loop": true,
-"name": "walk_left",
+"name": "damage_left",
 "speed": 5.0
 } ]
 

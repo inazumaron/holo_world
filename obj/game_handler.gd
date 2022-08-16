@@ -221,13 +221,18 @@ func generate_char_sfx(sfx_name):
 
 func add_xp(xp):
 	var res
+	var code
 	if active_character == 0:
 		res = calc_xp(main_char_level, xp)
+		code = main_char
 	if active_character == 1:
 		res = calc_xp(co_char_1_level, xp)
+		code = co_char_1
 	if active_character == 2:
 		res = calc_xp(co_char_2_level, xp)
-	print(res)
+		code = co_char_2
+	if res[1] > 0:
+		curr_world_id.level_up_ui(code, res[0]["LVL"])
 
 func calc_xp(data, xp):
 	data["EXP"] += xp

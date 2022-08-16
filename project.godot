@@ -20,6 +20,7 @@ GameHandler="*res://obj/game_handler.gd"
 BuffHandler="*res://obj/buff_handler.gd"
 SkillHandler="*res://obj/skill_handler.gd"
 ItemHandler="*res://obj/item_handler.gd"
+Database="*res://obj/data.gd"
 
 [input]
 

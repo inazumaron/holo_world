@@ -50,6 +50,7 @@ var door_base = preload("res://levels/door.tscn")
 var minimap_base = preload("res://ui/minimap.tscn")
 var recruit_base = preload("res://obj/char_recruit.tscn")
 var sfx_base = preload("res://obj/buff_effect.tscn")
+var level_up_base = preload("res://obj/levelUp_UI.tscn")
 var paused = false
 
 var dialogue_playing = false
@@ -273,7 +274,7 @@ func generate_character():
 func compute_stats():
 	room_count = floor(pow(level,1.5)) + 5
 	max_level_size = ceil(room_count/2)+1
-	enemy_budget = 10*floor(pow(level,1.5))
+	enemy_budget = 2*floor(pow(level,1.5))
 
 func generate_path(r_count, max_size, l_seed): #room count and max size of map (nxn)
 	rand_seed(l_seed)
@@ -427,3 +428,20 @@ func generate_sfx(sfx_name, source):
 	sfx_obj.position = source.position
 	sfx_obj.free_after = true
 	get_tree().get_root().add_child(sfx_obj)
+
+func get_char_skill_list(code):
+	if code == character.CODE:
+		return character.SKILL_LIST
+	if code == char2.CODE:
+		return char2.SKILL_LIST
+	if code == char3.CODE:
+		return char3.SKILL_LIST
+
+func level_up_ui(code, level):
+	var levelUp_UI = level_up_base.instance()
+	levelUp_UI.code = code
+	levelUp_UI.curr_skills = get_char_skill_list(code)
+	levelUp_UI.level = level
+	pause()
+	get_tree().get_root().add_child(levelUp_UI)
+	levelUp_UI.setCamera(true)

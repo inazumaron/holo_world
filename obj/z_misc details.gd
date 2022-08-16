@@ -82,5 +82,4 @@ const BODY_TYPE = [ #for kinematic bodies, to help identify
 #randomize obstacles
 
 #last thing done
-#party wide buffs search and apply
-#background buff behaviours
+#data.gd bug, reqs_list seems to be NiL

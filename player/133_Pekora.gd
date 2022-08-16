@@ -19,6 +19,7 @@ var SPECIAL_REGEN_TYPE = 0 #0 - auto, 1 - offensive, 2 - defensive
 var SPECIAL_EFFECTS = []
 
 var DAMAGE_ANIM_DUR = 0.2
+var SKILL_LIST = []			#For skill tree usage
 var ACTIVE = true			#for collab on field
 const WEAPON_PATH = "res://weapons/i_pekora_bombs.tscn"
 const CODE = 133

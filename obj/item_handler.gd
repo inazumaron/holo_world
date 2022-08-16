@@ -118,7 +118,6 @@ func process_passives(item):
 	if item["effect"] == "Buff":
 		var temp_buff = {"name":item["name"], "buffs": item["effect_details"].duplicate()}
 		BuffHandler.add_buff(temp_buff)
-		print("added ",temp_buff)
 
 func play_intro(item_name):
 	var sfx_name = item_name + "_intro"
