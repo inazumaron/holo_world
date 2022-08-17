@@ -82,6 +82,7 @@ func get_random_skills(count, code, curr_skills, level):
 	var data = [] + get_data(code)
 	var req_list = []
 	var alt_list = []
+	var possible_skills = []
 	for skill in curr_skills:
 		req_list.append(skill["req"])
 		alt_list.append(skill["alt"])
@@ -102,15 +103,15 @@ func get_random_skills(count, code, curr_skills, level):
 				if alt in alt_list:
 					alt_have = true
 					break
-		if !level_correct or !reqs_have or alt_have:
-			data.erase(skill)
-	if data.size() <= count:
-		return data 
+		if level_correct and reqs_have and !alt_have:
+			possible_skills.append(skill)
+	if possible_skills.size() <= count:
+		return possible_skills
 	var temp_skill_list = {}
 	while(temp_skill_list.size() < count):
-		var i = randi()%data.size()
-		if !(data[i]["name"] in skill_list):
-			temp_skill_list[data[i]["name"]] = data[i]
+		var i = randi()%possible_skills.size()
+		if !(possible_skills[i]["name"] in skill_list):
+			temp_skill_list[possible_skills[i]["name"]] = possible_skills[i]
 	for skill in temp_skill_list:
 		skill_list.append(temp_skill_list[skill].duplicate())
 	return skill_list

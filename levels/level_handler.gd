@@ -56,6 +56,7 @@ var paused = false
 var dialogue_playing = false
 var recruiting = false
 var recruit_obj
+var levelUp_UI = null
 
 func _ready():
 	char_base = GameHandler.get_char_path(GameHandler.main_char)
@@ -113,6 +114,23 @@ func _process(delta):
 		if !active_room.dialogue_playing:
 			unpause()
 			dialogue_playing = false
+
+	if levelUp_UI != null:
+		if levelUp_UI.skill_selected:
+			var temp_skill_data = levelUp_UI.selected_data
+			print("applying level up buff ",temp_skill_data)
+			BuffHandler.add_buff({"name": temp_skill_data["name"], "buffs":temp_skill_data["effects"]})
+			levelUp_UI.queue_free()
+			levelUp_UI = null
+			#return current camera to player
+			var temp = GameHandler.get_active_char()
+			if temp == character.CODE:
+				character.setCamera(true)
+			elif temp == char2.CODE:
+				char2.setCamera(true)
+			else:
+				char3.setCamera(true)
+			unpause()
 
 func generate_room():
 	active_room = room_base.instance()
@@ -323,12 +341,15 @@ func pause():
 	active_room.pause()
 	if character.CODE == active_char:
 		character.ACTIVE = false
+		character.toggle_ui(false)
 	if char2 != null:
 		if char2.CODE == active_char:
 			char2.ACTIVE = false
+			char2.toggle_ui(false)
 	if char3 != null:
 		if char3.CODE == active_char:
 			char3.ACTIVE = false
+			char3.toggle_ui(false)
 	paused = true
 	ItemHandler.set_process(false)
 	print("paused")
@@ -338,12 +359,15 @@ func unpause():
 	active_room.unpause()
 	if character.CODE == active_char:
 		character.ACTIVE = true
+		character.toggle_ui(true)
 	if char2 != null:
 		if char2.CODE == active_char:
 			char2.ACTIVE = true
+			char2.toggle_ui(true)
 	if char3 != null:
 		if char3.CODE == active_char:
 			char3.ACTIVE = true
+			char3.toggle_ui(true)
 	paused = false
 	ItemHandler.set_process(true)
 	print("resumed")
@@ -438,8 +462,9 @@ func get_char_skill_list(code):
 		return char3.SKILL_LIST
 
 func level_up_ui(code, level):
-	var levelUp_UI = level_up_base.instance()
+	levelUp_UI = level_up_base.instance()
 	levelUp_UI.code = code
+	#levelUp_UI.preloaded_textures = textures
 	levelUp_UI.curr_skills = get_char_skill_list(code)
 	levelUp_UI.level = level
 	pause()

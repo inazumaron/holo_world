@@ -265,3 +265,8 @@ func generate_boss_hp():
 		add_child(bhp)
 		bhp.position = Vector2(0, 250)
 	return bhp
+
+func toggle_ui(x):
+	ui.visible = x
+	item.visible = x
+	minimap.visible = x

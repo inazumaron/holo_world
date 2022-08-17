@@ -1,9 +1,31 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://obj/levelUp_UI.gd" type="Script" id=1]
 [ext_resource path="res://resc/skills/Chain reaction.png" type="Texture" id=2]
 [ext_resource path="res://resc/skills/Arsonist.png" type="Texture" id=3]
 [ext_resource path="res://resc/skills/Bigger bombs.png" type="Texture" id=4]
+[ext_resource path="res://resc/arial.ttf" type="DynamicFontData" id=5]
+
+[sub_resource type="DynamicFont" id=1]
+size = 60
+font_data = ExtResource( 5 )
+
+[sub_resource type="Theme" id=2]
+default_font = SubResource( 1 )
+
+[sub_resource type="DynamicFont" id=3]
+size = 60
+font_data = ExtResource( 5 )
+
+[sub_resource type="DynamicFont" id=4]
+font_data = ExtResource( 5 )
+
+[sub_resource type="DynamicFont" id=5]
+size = 45
+font_data = ExtResource( 5 )
+
+[sub_resource type="Theme" id=6]
+default_font = SubResource( 5 )
 
 [node name="Node2D" type="Node2D"]
 scale = Vector2( 0.5, 0.5 )
@@ -26,12 +48,18 @@ margin_left = -221.0
 margin_top = 11.8962
 margin_right = 225.0
 margin_bottom = 110.896
+theme = SubResource( 2 )
+custom_fonts/mono_font = SubResource( 3 )
+custom_fonts/bold_italics_font = SubResource( 4 )
+bbcode_enabled = true
+scroll_active = false
 
 [node name="Desc Text" type="RichTextLabel" parent="."]
 margin_left = -445.0
 margin_top = 143.345
 margin_right = 446.0
 margin_bottom = 282.345
+theme = SubResource( 6 )
 bbcode_enabled = true
 
 [node name="Camera2D" type="Camera2D" parent="."]

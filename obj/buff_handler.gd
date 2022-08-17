@@ -349,6 +349,7 @@ func clear_list():
 
 #Add buff to main character, usually from item usage
 func add_buff(buff):
+	print("adding buff: ",buff)
 	#Get target character, will only add, effects will be applied with sec timer
 	for i in char_nodes:
 		if i["node"].CODE == GameHandler.get_active_char():

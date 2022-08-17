@@ -7,6 +7,10 @@ const char_paths = {
 	"133": preload("res://player/133_Pekora.tscn")
 }
 
+const skill_textures = {
+	
+}
+
 #Character related data
 var active_character = 0 #0- main, 1,2 collab
 var main_char = 132		#change later or not. by default noel will be main char rn
@@ -22,7 +26,7 @@ var co_char_2 = 0
 var co_char_2_stats = main_char_stats.duplicate(true)
 var co_char_2_level = {"EXP":0, "LVL":1}
 
-const xp_vals = [100, 150, 225, 325, 450, 575, 725, 900, 1100, 1350]	
+const xp_vals = [5, 150, 225, 325, 450, 575, 725, 900, 1100, 1350]	
 	#needed amount of xp to level up, index indicate current level + 1
 	#xp given by enemy scales with their costs, boss gives 100 + (level - 1) * 50
 
@@ -293,3 +297,28 @@ func set_world_id(id):
 
 func set_main_char(x):
 	main_char = x
+
+#==============================================  misc functions
+func get_all_files(path: String, file_ext := "", files := []):
+	var dir = Directory.new()
+
+	if dir.open(path) == OK:
+		dir.list_dir_begin(true, true)
+
+		var file_name = dir.get_next()
+
+		while file_name != "":
+			if dir.current_is_dir():
+				files = get_all_files(dir.get_current_dir().plus_file(file_name), file_ext, files)
+			else:
+				if file_ext and file_name.get_extension() != file_ext:
+					file_name = dir.get_next()
+					continue
+
+				files.append(file_name)
+
+			file_name = dir.get_next()
+	else:
+		print("An error occurred when trying to access %s." % path)
+
+	return files

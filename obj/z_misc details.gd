@@ -76,10 +76,10 @@ const BODY_TYPE = [ #for kinematic bodies, to help identify
 ]
 
 #to do
-#item usage bigger sfx on use
-#Flare piercing arrow
-#Pekora drop TNT
 #randomize obstacles
 
-#last thing done
-#data.gd bug, reqs_list seems to be NiL
+#Current bugs
+#	Level up buffs will be given to ACTIVE character. So for future implementation for shared xp, deal with this one first
+#		Affected scripts are: Game handler and level handler
+#	Level up textures will need to preload, as of writing, godot.org is down so leaving this later
+#		Goal, recursively preload skill folder for ease in adding files in the future

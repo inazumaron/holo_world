@@ -6,9 +6,12 @@ var curr_skills
 var level
 var title = ""
 var desc = ""
-const bbHead = "<center><b>"
-const bbfoot = "</b></center>"
+const bbHead = ""
+const bbfoot = ""
+var preloaded_textures
 var selected = 0		#-1 - none selected, 0 - 1, 1 - 2, 3 - 3 selected
+var skill_selected = false
+var selected_data
 
 const sprite_locs = [	#Format is start vector, end vector x 3
 	Vector2(-271,-140), Vector2(-145,-10),
@@ -16,7 +19,9 @@ const sprite_locs = [	#Format is start vector, end vector x 3
 	Vector2(137, -140), Vector2(265, -10)]
 
 func _ready():
+	z_index = 2
 	options = Database.get_random_skills(3,code, curr_skills, level)
+	#set_data()		- currently need to first preload textures, check bugs
 
 func _process(delta):
 	var posCheck = is_hovering()
@@ -24,6 +29,20 @@ func _process(delta):
 		title = options[posCheck]["name"]
 		desc = options[posCheck]["desc"]
 		set_text()
+	
+	if Input.is_action_pressed("mouse_click"):
+		if posCheck == 0:
+			selected = 0
+			selected_data = options[0]
+			skill_selected = true
+		if posCheck == 1:
+			selected = 1
+			selected_data = options[1]
+			skill_selected = true
+		if posCheck == 2:
+			selected = 2
+			selected_data = options[2]
+			skill_selected = true
 
 func set_text():
 	$"Title Text".set_bbcode(bbHead + title + bbfoot)
@@ -37,11 +56,10 @@ func is_hovering():
 		if mouse.x > sprite_locs[i*2].x and mouse.x < sprite_locs[(i*2)+1].x:
 			return i
 
-func set_data(data):
-	options = data
-	$S1.texture = "res://resc/skills" + options[0]["name"] + ".png"
-	$S2.texture = "res://resc/skills" + options[1]["name"] + ".png"
-	$S3.texture = "res://resc/skills" + options[2]["name"] + ".png"
+func set_data():
+	$S1.texture = "res://resc/skills/" + options[0]["name"] + ".png"
+	$S2.texture = "res://resc/skills/" + options[1]["name"] + ".png"
+	$S3.texture = "res://resc/skills/" + options[2]["name"] + ".png"
 
 func setCamera(x):
 	$Camera2D.current = x
