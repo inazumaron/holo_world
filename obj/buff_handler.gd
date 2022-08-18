@@ -71,6 +71,14 @@ func sec_timer():
 				if buffs[j]["poison"][1] <= 0:
 					buffs[j].erase("poison")
 					src.buffs = buffs
+		temp = find_buff(buffs,"burn")
+		if temp.size() > 0:
+			for j in temp:
+				src.damage(buffs[j]["burn"][0])
+				buffs[j]["burn"][1] -= 1
+				if buffs[j]["burn"][1] <= 0:
+					buffs[j].erase("burn")
+					src.buffs = buffs
 		stat_update(src)
 
 func realtime_handler(delta): # For buffs that need to be applied realtime
@@ -180,7 +188,7 @@ func update_buffs(effects, source):
 		var i = get_p_index(source)
 		char_nodes[i]['buffs'][effects["name"]] = effects["buffs"]
 		var x = char_nodes[i]['node']
-		x.buffs = char_nodes[i]['buffs']
+		x.update_buffs(char_nodes[i]['buffs'])
 		if !("for_party" in effects):
 			var temp_pb = buff_applies_to_party(effects)
 			if !temp_pb["buffs"].empty():
@@ -349,7 +357,6 @@ func clear_list():
 
 #Add buff to main character, usually from item usage
 func add_buff(buff):
-	print("adding buff: ",buff)
 	#Get target character, will only add, effects will be applied with sec timer
 	for i in char_nodes:
 		if i["node"].CODE == GameHandler.get_active_char():
@@ -414,3 +421,29 @@ func source_exist(source):
 	if !res.get_ref():
 		return false
 	return true
+
+func get_weapon_buff(buffs):
+	var weapon_effects = {}
+	for i in buffs:
+		var temp_effects = {}
+		for j in buffs[i]:
+			for k in j:
+				var res = BuffHandler.buff2effect(k, j[k])
+				if res.size() > 0:
+					temp_effects[res[0]] = res[1]
+		if temp_effects.size() > 0:
+			weapon_effects["name"] = i
+			weapon_effects["buffs"] = temp_effects
+	return weapon_effects
+
+func buff2effect(buff, effects):	#converts buffs to effects, for weapon related buffs
+	#buffs passed must be individual (expects single buff of format "buff" : [ effects ])
+	#returns buff in [key, value] array format
+	var weaponBuff = {}
+	if buff == "burnChance":
+		if randf() < effects[3]:
+			return ["burn", [effects[1], effects[2], 0, "pause"]]
+		else:
+			return []
+	return []
+

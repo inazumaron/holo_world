@@ -3,7 +3,7 @@ extends Node2D
 var arrow_speed = 600
 var state = "load"
 var anim_finished = false
-var buffs = []
+var buffs
 var multipliers
 var offsets
 var damage = 1
@@ -37,6 +37,7 @@ func shoot():
 	projectile_inst.velocity = Vector2(arrow_speed,0).rotated(rotation)
 	projectile_inst.play("Flare_arrow")
 	projectile_inst.group = "player"
+	projectile_inst.effects = BuffHandler.get_weapon_buff(buffs)
 	projectile_inst.damage = (damage + offsets["ATTACK_DAMAGE"]) * multipliers["ATTACK_DAMAGE"]
 	get_tree().get_root().add_child(projectile_inst)
 

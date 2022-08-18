@@ -118,7 +118,6 @@ func _process(delta):
 	if levelUp_UI != null:
 		if levelUp_UI.skill_selected:
 			var temp_skill_data = levelUp_UI.selected_data
-			print("applying level up buff ",temp_skill_data)
 			BuffHandler.add_buff({"name": temp_skill_data["name"], "buffs":temp_skill_data["effects"]})
 			levelUp_UI.queue_free()
 			levelUp_UI = null
