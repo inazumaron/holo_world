@@ -49,6 +49,9 @@ var player_pos = Vector2.ZERO
 
 var level_val = ""
 
+func _ready():
+	load_skill_icons()
+
 func change_handler(x,y):
 	x.queue_free()
 	BuffHandler.set_process(false)
@@ -299,26 +302,23 @@ func set_main_char(x):
 	main_char = x
 
 #==============================================  misc functions
-func get_all_files(path: String, file_ext := "", files := []):
+var skill_icons = {}
+
+func load_skill_icons():
+	var path = "res://resc/skills/"
 	var dir = Directory.new()
-
-	if dir.open(path) == OK:
-		dir.list_dir_begin(true, true)
-
+	dir.open(path)
+	dir.list_dir_begin()
+	while true:
 		var file_name = dir.get_next()
+		if file_name == "":
+			#break the while loop when get_next() returns ""
+			break
+		elif !file_name.begins_with(".") and !file_name.ends_with(".import"):
+			#if !file_name.ends_with(".import"):
+			file_name.erase(file_name.length()-4,4)
+			skill_icons[file_name] = load(path + "/" + file_name + ".png")
+	dir.list_dir_end()
 
-		while file_name != "":
-			if dir.current_is_dir():
-				files = get_all_files(dir.get_current_dir().plus_file(file_name), file_ext, files)
-			else:
-				if file_ext and file_name.get_extension() != file_ext:
-					file_name = dir.get_next()
-					continue
-
-				files.append(file_name)
-
-			file_name = dir.get_next()
-	else:
-		print("An error occurred when trying to access %s." % path)
-
-	return files
+func get_skill_icon(x):
+	return skill_icons[x]

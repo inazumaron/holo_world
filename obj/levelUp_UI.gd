@@ -21,7 +21,7 @@ const sprite_locs = [	#Format is start vector, end vector x 3
 func _ready():
 	z_index = 2
 	options = Database.get_random_skills(3,code, curr_skills, level)
-	#set_data()		- currently need to first preload textures, check bugs
+	set_data()		#- currently need to first preload textures, check bugs
 
 func _process(delta):
 	var posCheck = is_hovering()
@@ -57,9 +57,9 @@ func is_hovering():
 			return i
 
 func set_data():
-	$S1.texture = "res://resc/skills/" + options[0]["name"] + ".png"
-	$S2.texture = "res://resc/skills/" + options[1]["name"] + ".png"
-	$S3.texture = "res://resc/skills/" + options[2]["name"] + ".png"
+	$S1.texture = GameHandler.get_skill_icon(options[0]["name"])
+	$S2.texture = GameHandler.get_skill_icon(options[1]["name"])
+	$S3.texture = GameHandler.get_skill_icon(options[2]["name"])
 
 func setCamera(x):
 	$Camera2D.current = x

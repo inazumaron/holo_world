@@ -11,7 +11,7 @@ extends Node
 
 const c_130_ST = [
 	{"name": "Burning passion", "desc":"attacks has chance to burn enemy", "level":1, "req":[], "alt":[], 
-		"effects":[{"burnChance": [-1, 1, 3, 0.9, 0, "perm"]}]},
+		"effects":{"burnChance": [-1, 1, 3, 0.9, 0, "perm"]}},
 	{"name": "Pinpoint accuracy", "desc":"increse crit chance", "level":1, "req":[], "alt":[], "effects":[]},
 	{"name": "Arsonist", "desc":"skill now runs on duration", "level":1, "req":["c130_flameArrow"], "alt":[], "effects":[]},
 	{"name": "Explosion", "desc":"burn effect now has chance to explode", "level":1, "req":["Burning passion"], "alt":[], "effects":[]},

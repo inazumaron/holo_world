@@ -3,6 +3,7 @@ extends Node
 #For reference in creating buff:
 #{name:unique_buff_name, buffs: [ buff details ]}
 #WARNING: make sure the unique_buff_name does not contain buff names (i.e "slow", "quick", etc as it will be detected in find_buff)
+#when using buff names, add '_' after first letter for consistency
 
 var char_party_buffs = [ #Party buffs that characters give when inactive
 	{ "name" : "133_3", "buffs" : [{"critRate": [10, -1, 1, "perm"]}]}
@@ -79,6 +80,15 @@ func sec_timer():
 				if buffs[j]["burn"][1] <= 0:
 					buffs[j].erase("burn")
 					src.buffs = buffs
+				if !("b_urnSprite" in buffs):
+					var temp_sprite = buff_spr_base.instance()
+					temp_sprite.play("burn")
+					i['node'].add_child(temp_sprite)
+					buffs["b_urnSprite"] = temp_sprite
+		else:
+			if "b_urnSprite" in buffs:
+				buffs["b_urnSprite"].queue_free()
+				buffs.erase("b_urnSprite")
 		stat_update(src)
 
 func realtime_handler(delta): # For buffs that need to be applied realtime
@@ -335,12 +345,7 @@ func get_e_index(source):
 	return enemy_nodes.size()-1
 
 func add_character(source):
-	var present = false
-	for i in char_nodes:
-		if i['node'] == source:
-			present = true
-	if !present:
-		char_nodes.append({'node':source, 'buffs':source.buffs})
+	char_nodes.append({'node':source, 'buffs':source.buffs})
 
 func enemy_dead(src):
 	for i in range(0,enemy_nodes.size()):
@@ -424,13 +429,13 @@ func source_exist(source):
 
 func get_weapon_buff(buffs):
 	var weapon_effects = {}
+	print(buffs)
 	for i in buffs:
 		var temp_effects = {}
 		for j in buffs[i]:
-			for k in j:
-				var res = BuffHandler.buff2effect(k, j[k])
-				if res.size() > 0:
-					temp_effects[res[0]] = res[1]
+			var res = BuffHandler.buff2effect(j, buffs[i][])
+			if res.size() > 0:
+				temp_effects[res[0]] = res[1]
 		if temp_effects.size() > 0:
 			weapon_effects["name"] = i
 			weapon_effects["buffs"] = temp_effects

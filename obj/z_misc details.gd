@@ -81,12 +81,9 @@ const BODY_TYPE = [ #for kinematic bodies, to help identify
 ]
 
 #to do
+#code more of flares skill tree
 #randomize obstacles
 
 #Current bugs
-#	burning passion, buff disappears once activated (try to replicate with low percent as currently increased for testing)
-#	add burn sprite when applying burn
 #	Level up buffs will be given to ACTIVE character. So for future implementation for shared xp, deal with this one first
 #		Affected scripts are: Game handler and level handler
-#	Level up textures will need to preload, as of writing, godot.org is down so leaving this later
-#		Goal, recursively preload skill folder for ease in adding files in the future

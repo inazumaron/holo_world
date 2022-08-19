@@ -99,7 +99,6 @@ func play(anim):
 func update_ui():
 	if typeof(hp_ui) == 4:
 		hp_ui = GameHandler.get_boss_hp_ui()
-	print(hp_ui)
 	hp_ui.set_val((100 * HP)/ MAX_HP)
 
 func take_damage(damage, effect):

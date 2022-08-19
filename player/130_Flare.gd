@@ -198,7 +198,7 @@ func send_data():
 
 func update_data(data):
 	HP = data["HP"]
-	buffs = data["BUFFS"]
+	update_buffs(data["BUFFS"])
 	activate(data["ACTIVE"])
 	ui_manipulation(0)
 
