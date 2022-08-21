@@ -153,7 +153,12 @@ func display_damage(pos,dam):
 
 func damage_handler(damage, effects, buffs, source):
 	if !effects.empty():
-		update_buffs(effects, source)
+		#Effect format 
+		if typeof(effects) == TYPE_DICTIONARY:
+			update_buffs(effects, source)
+		else:
+			for effect in effects:
+				update_buffs(effect, source)
 	var dam = damage
 	dam = damage - source.DEF
 	
@@ -429,7 +434,6 @@ func source_exist(source):
 
 func get_weapon_buff(buffs):
 	var weapon_effects = {}
-	print(buffs)
 	for i in buffs:
 		var temp_effects = {}
 		for j in buffs[i]:

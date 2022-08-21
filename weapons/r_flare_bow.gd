@@ -31,6 +31,7 @@ func attack():
 		shoot()
 
 func shoot():
+	print("bow buff",buffs)
 	var projectile_inst = proj_base.instance()
 	projectile_inst.position = $Bow_tip.get_global_position()
 	projectile_inst.rotation = rotation

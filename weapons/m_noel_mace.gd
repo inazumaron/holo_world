@@ -4,7 +4,7 @@ var SWING_DURATION = .3
 var SWING_SPEED = 2.5
 var SWING_ANGLE = 180
 var DAMAGE = 1
-var EFFECTS = {"knockback":[0,0]}
+var EFFECTS = {"noel mace":{"knockback":[0,0]}}
 var EFFECT_VAL = {"knockback":1000}
 var ACTIVE = true
 
@@ -18,6 +18,7 @@ var swing_dur_counter = 0
 
 var multipliers
 var offsets
+var buffs = {}
 
 signal EntityHit(damage,effects)
 
@@ -51,8 +52,9 @@ func attack():
 
 func _on_Area2D_body_entered(body):
 	if body.has_method("take_damage") and body.is_in_group("enemy") and can_damage and ACTIVE:
-		EFFECTS["knockback"][0] = EFFECT_VAL["knockback"]
-		EFFECTS["knockback"][1] = rotation
+		EFFECTS["noel mace"]["knockback"][0] = EFFECT_VAL["knockback"]
+		EFFECTS["noel mace"]["knockback"][1] = rotation
+		buffs = BuffHandler.get_weapon_buff(buffs)
 		var damage = (DAMAGE + offsets["ATTACK_DAMAGE"]) * multipliers["ATTACK_DAMAGE"]
 		self.connect("EntityHit",body,"take_damage")
 		emit_signal("EntityHit",damage, {"name":"noel mace", "buffs":EFFECTS})
