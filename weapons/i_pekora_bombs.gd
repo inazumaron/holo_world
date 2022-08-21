@@ -4,7 +4,7 @@ var PROJ_SPEED = 600
 var DAMAGE = 1
 var MIN_DIST = 100
 var MAX_DIST = 200
-var BUFFS = []
+var buffs = []
 var multipliers
 var offsets
 

@@ -155,10 +155,21 @@ func damage_handler(damage, effects, buffs, source):
 	if !effects.empty():
 		#Effect format 
 		if typeof(effects) == TYPE_DICTIONARY:
-			update_buffs(effects, source)
+			#delete this part when everything is resolved, also in add_buffs
+			var temp_effects = {}
+			if "name" in effects:
+				temp_effects[effects["name"]] = effects["buffs"]
+			else:
+				temp_effects = effects
+			update_buffs(temp_effects, source)
 		else:
 			for effect in effects:
-				update_buffs(effect, source)
+				var temp_effects = {}
+				if "name" in effect:
+					temp_effects[effects["name"]] = effects["buffs"]
+				else:
+					temp_effects = effect
+				update_buffs(temp_effects, source)
 	var dam = damage
 	dam = damage - source.DEF
 	
@@ -201,16 +212,20 @@ func damage_handler(damage, effects, buffs, source):
 func update_buffs(effects, source):
 	if is_player(source):
 		var i = get_p_index(source)
-		char_nodes[i]['buffs'][effects["name"]] = effects["buffs"]
+		var key = effects.keys()
+		print("bh keys ",key)
+		char_nodes[i]['buffs'][key[0]] = effects[key[0]]
 		var x = char_nodes[i]['node']
 		x.update_buffs(char_nodes[i]['buffs'])
-		if !("for_party" in effects):
+		if !("_party" in key[0]):
 			var temp_pb = buff_applies_to_party(effects)
-			if !temp_pb["buffs"].empty():
+			var key2 = temp_pb.keys()
+			if !temp_pb[key2[0]].empty():
 				apply_buff_to_party(temp_pb, source)
 	else:
 		var i = get_e_index(source)
-		enemy_nodes[i]['buffs'][effects["name"]] = effects["buffs"]
+		var key = effects.keys()
+		enemy_nodes[i]['buffs'][key[0]] = effects[key[0]]
 		var x = enemy_nodes[i]['node']
 		x.buffs = enemy_nodes[i]['buffs']
 		
@@ -263,11 +278,12 @@ func update_buffs(effects, source):
 
 func buff_applies_to_party(arg_buff):
 	#finds and returns buffs that affect the whole party
-	var temp_party_buff = {"name":arg_buff["name"]+"_party", "buffs":{}, "for_party":true}
-	for buff_i in arg_buff["buffs"]:
+	var key = arg_buff.keys()
+	var temp_party_buff = {key[0]+"_party": {}}
+	for buff_i in arg_buff[key[0]]:
 		if buff_i in ["fast", "tough", "strong", "quick", "slow", "regen", "critRate", "critDmg"]:
-			if arg_buff["buffs"][buff_i][2] == 1:
-				temp_party_buff["buffs"][buff_i] = arg_buff["buffs"][buff_i].duplicate()
+			if arg_buff[key[0]][buff_i][2] == 1:
+				temp_party_buff[key[0]+"_party"][buff_i] = arg_buff[key[0]][buff_i].duplicate()
 	return temp_party_buff
 
 func apply_buff_to_party(buff, source):
@@ -370,7 +386,12 @@ func add_buff(buff):
 	#Get target character, will only add, effects will be applied with sec timer
 	for i in char_nodes:
 		if i["node"].CODE == GameHandler.get_active_char():
-			update_buffs(buff, i["node"])
+			var temp = {}
+			if "name" in buff:
+				temp[buff["name"]] = buff["buffs"]
+			else:
+				temp = buff
+			update_buffs(temp, i["node"])
 
 func knockback_handler(source, knockback, weight):	#if returns true, knockback done, else ongoing
 	source.direction = knockback[1]
@@ -434,6 +455,7 @@ func source_exist(source):
 
 func get_weapon_buff(buffs):
 	var weapon_effects = {}
+	print(buffs)
 	for i in buffs:
 		var temp_effects = {}
 		for j in buffs[i]:
