@@ -271,5 +271,6 @@ func toggle_ui(x):
 	minimap.visible = x
 
 func update_buffs(x):
+	print(x)
 	buffs = x
 	weapon.buffs = x

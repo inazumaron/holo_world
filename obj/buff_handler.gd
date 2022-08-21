@@ -433,7 +433,7 @@ func get_weapon_buff(buffs):
 	for i in buffs:
 		var temp_effects = {}
 		for j in buffs[i]:
-			var res = BuffHandler.buff2effect(j, buffs[i][])
+			var res = BuffHandler.buff2effect(j, buffs[i][j])
 			if res.size() > 0:
 				temp_effects[res[0]] = res[1]
 		if temp_effects.size() > 0:
