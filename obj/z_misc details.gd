@@ -85,6 +85,8 @@ const BODY_TYPE = [ #for kinematic bodies, to help identify
 #randomize obstacles
 
 #Current bugs
-#	in the middle of transitioning buff format, checking if "for party" results in infinite loop
+#	Last thing done, setting seed rng inheritance, level_handler still wip
+#	Enemy tracking does not shift to active characters
+#	Hazards position and forms gets reset when re entering room
 #	Level up buffs will be given to ACTIVE character. So for future implementation for shared xp, deal with this one first
 #		Affected scripts are: Game handler and level handler

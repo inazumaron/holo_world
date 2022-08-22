@@ -7,10 +7,6 @@ const char_paths = {
 	"133": preload("res://player/133_Pekora.tscn")
 }
 
-const skill_textures = {
-	
-}
-
 #Character related data
 var active_character = 0 #0- main, 1,2 collab
 var main_char = 132		#change later or not. by default noel will be main char rn
@@ -50,8 +46,18 @@ var player_pos = Vector2.ZERO
 var level_val = ""
 
 func _ready():
+	generate_seed("wah")
 	load_skill_icons()
 
+func generate_seed(rng):
+	if typeof(rng) == TYPE_INT:
+		seed(rng)
+	if typeof(rng) == TYPE_STRING:
+		seed(rng.hash())
+
+func get_rng():
+	return randi()
+	
 func change_handler(x,y):
 	x.queue_free()
 	BuffHandler.set_process(false)
@@ -67,7 +73,6 @@ func change_handler(x,y):
 #============================================  route handling
 func generate_worlds(base):
 	if len(worlds) == 0:
-		randomize()
 		for j in range(0,MAX_LEVELS):
 			var temp = []
 			for i in range(0,MAX_LEVELS):

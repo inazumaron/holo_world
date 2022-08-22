@@ -57,5 +57,5 @@ func _on_Area2D_body_entered(body):
 		buffs = BuffHandler.get_weapon_buff(buffs)
 		var damage = (DAMAGE + offsets["ATTACK_DAMAGE"]) * multipliers["ATTACK_DAMAGE"]
 		self.connect("EntityHit",body,"take_damage")
-		emit_signal("EntityHit",damage, {"name":"noel mace", "buffs":EFFECTS})
+		emit_signal("EntityHit",damage, EFFECTS)
 		self.disconnect("EntityHit",body,"take_damage")

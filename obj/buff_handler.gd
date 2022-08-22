@@ -112,6 +112,8 @@ func realtime_handler(delta): # For buffs that need to be applied realtime
 						enemy_nodes[source]["buffs"].erase(i["source_buff"])
 						enemy_nodes[source]["node"].buffs = enemy_nodes[source]["buffs"]
 					realtime_buffs.erase(i)
+		else:
+			realtime_buffs.erase(i)
 	
 func temp_buff_handler(delta):
 	for i in temp_buffs:
@@ -154,22 +156,11 @@ func display_damage(pos,dam):
 func damage_handler(damage, effects, buffs, source):
 	if !effects.empty():
 		#Effect format 
-		if typeof(effects) == TYPE_DICTIONARY:
-			#delete this part when everything is resolved, also in add_buffs
-			var temp_effects = {}
-			if "name" in effects:
-				temp_effects[effects["name"]] = effects["buffs"]
-			else:
-				temp_effects = effects
-			update_buffs(temp_effects, source)
-		else:
+		if effects.size() == 1:
+			update_buffs(effects, source)
+		elif effects.size() > 1:
 			for effect in effects:
-				var temp_effects = {}
-				if "name" in effect:
-					temp_effects[effects["name"]] = effects["buffs"]
-				else:
-					temp_effects = effect
-				update_buffs(temp_effects, source)
+				update_buffs(effects[effect], source)
 	var dam = damage
 	dam = damage - source.DEF
 	
@@ -211,9 +202,9 @@ func damage_handler(damage, effects, buffs, source):
 
 func update_buffs(effects, source):
 	if is_player(source):
+		print("update buff effects", effects)
 		var i = get_p_index(source)
 		var key = effects.keys()
-		print("bh keys ",key)
 		char_nodes[i]['buffs'][key[0]] = effects[key[0]]
 		var x = char_nodes[i]['node']
 		x.update_buffs(char_nodes[i]['buffs'])
@@ -234,7 +225,7 @@ func update_buffs(effects, source):
 	var temp = find_buff(effects, "knockback")
 	if temp.size() > 0:
 		for i in temp:
-			var temp2 = {"node":source, "type":"knockback", "details":effects[i]["knockback"], "source_buff":effects["name"]}
+			var temp2 = {"node":source, "type":"knockback", "details":effects[i]["knockback"], "source_buff":i}
 			realtime_buffs.append(temp2)
 	
 	#================================================================================================
@@ -388,8 +379,10 @@ func add_buff(buff):
 		if i["node"].CODE == GameHandler.get_active_char():
 			var temp = {}
 			if "name" in buff:
+				print("add buff apply")
 				temp[buff["name"]] = buff["buffs"]
 			else:
+				print("add buff skip")
 				temp = buff
 			update_buffs(temp, i["node"])
 
@@ -455,7 +448,6 @@ func source_exist(source):
 
 func get_weapon_buff(buffs):
 	var weapon_effects = {}
-	print(buffs)
 	for i in buffs:
 		var temp_effects = {}
 		for j in buffs[i]:
@@ -463,8 +455,7 @@ func get_weapon_buff(buffs):
 			if res.size() > 0:
 				temp_effects[res[0]] = res[1]
 		if temp_effects.size() > 0:
-			weapon_effects["name"] = i
-			weapon_effects["buffs"] = temp_effects
+			weapon_effects[i] = temp_effects
 	return weapon_effects
 
 func buff2effect(buff, effects):	#converts buffs to effects, for weapon related buffs

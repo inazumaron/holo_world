@@ -196,10 +196,10 @@ func activate_item(x):
 
 func e_buff(x):
 	if x:
-		var temp_buff = {"name": item2["name"], "buffs": item2["effect_details"].duplicate()}
+		var temp_buff = {item2["name"] : item2["effect_details"].duplicate()}
 		BuffHandler.add_buff(temp_buff)
 	else:
-		var temp_buff = {"name": item1["name"], "buffs": item1["effect_details"].duplicate()}
+		var temp_buff = {item1["name"]: item1["effect_details"].duplicate()}
 		BuffHandler.add_buff(temp_buff)
 	
 func e_recruit(x):

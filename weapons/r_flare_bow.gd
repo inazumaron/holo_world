@@ -31,7 +31,6 @@ func attack():
 		shoot()
 
 func shoot():
-	print("bow buff",buffs)
 	var projectile_inst = proj_base.instance()
 	projectile_inst.position = $Bow_tip.get_global_position()
 	projectile_inst.rotation = rotation
@@ -39,6 +38,7 @@ func shoot():
 	projectile_inst.play("Flare_arrow")
 	projectile_inst.group = "player"
 	projectile_inst.effects = BuffHandler.get_weapon_buff(buffs)
+	print("projectile effects ",projectile_inst.effects)
 	projectile_inst.damage = (damage + offsets["ATTACK_DAMAGE"]) * multipliers["ATTACK_DAMAGE"]
 	get_tree().get_root().add_child(projectile_inst)
 

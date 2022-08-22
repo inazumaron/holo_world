@@ -19,7 +19,7 @@ const hazard_data = [
 		"onEntry":true, "damage":1
 	}},
 	{"name":"gy_swamp_", "level":1, "cost":1, "vars":2, "data":{
-		"onEntry":true, "continious":true, "effects":{"name":"swampSlow", "buffs":{"slow":[0.5, 1, 1, "bg"]}}
+		"onEntry":true, "continious":true, "effects":{"swampSlow":{"slow":[0.5, 1, 1, "bg"]}}
 	}}
 ]
 const obs_base = preload("res://levels/obstacle_small.tscn")

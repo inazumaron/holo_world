@@ -59,12 +59,13 @@ var recruit_obj
 var levelUp_UI = null
 
 func _ready():
+	seed(GameHandler.get_rng())
+	
 	char_base = GameHandler.get_char_path(GameHandler.main_char)
 	if GameHandler.co_1_active:
 		char2_base = GameHandler.get_char_path(GameHandler.co_char_1)
 	if GameHandler.co_2_active:
 		char3_base = GameHandler.get_char_path(GameHandler.co_char_2)
-	seed(3)
 	set_process(false)
 	if level_seed == 0:
 		level_seed = randi()

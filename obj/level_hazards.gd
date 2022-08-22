@@ -5,7 +5,7 @@ var HP = 1				#if destructible
 var ACTIVE = true
 
 var shape = "circle"
-var effects = []
+var effects = {}
 var damage = 0
 var continious = false	#apply effect every sec
 var onEntry = false		#apply effect on entry
