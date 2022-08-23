@@ -38,7 +38,6 @@ func shoot():
 	projectile_inst.play("Flare_arrow")
 	projectile_inst.group = "player"
 	projectile_inst.effects = BuffHandler.get_weapon_buff(buffs)
-	print("projectile effects ",projectile_inst.effects)
 	projectile_inst.damage = (damage + offsets["ATTACK_DAMAGE"]) * multipliers["ATTACK_DAMAGE"]
 	get_tree().get_root().add_child(projectile_inst)
 

@@ -59,7 +59,12 @@ var recruit_obj
 var levelUp_UI = null
 
 func _ready():
-	seed(GameHandler.get_rng())
+	var data_check = GameHandler.get_char_data()
+	if data_check != null:
+		char_data = data_check
+	
+	level_seed = GameHandler.get_rng()
+	seed(level_seed)
 	
 	char_base = GameHandler.get_char_path(GameHandler.main_char)
 	if GameHandler.co_1_active:
@@ -67,11 +72,9 @@ func _ready():
 	if GameHandler.co_2_active:
 		char3_base = GameHandler.get_char_path(GameHandler.co_char_2)
 	set_process(false)
-	if level_seed == 0:
-		level_seed = randi()
 	compute_stats()
 	if path == []:
-		generate_path(room_count, max_level_size, level_seed)
+		generate_path(room_count, max_level_size)
 	GameHandler.set_world_id(self)
 	
 	set_process(true)
@@ -137,6 +140,7 @@ func generate_room():
 	active_room.enemy_cost = enemy_budget
 	active_room.room_seed = level_seed - room_count + active_room_val
 	active_room.cleared = path[active_room_val]["cleared"]
+	active_room.char_ids = [character, char2, char3]
 	
 	if path[active_room_val]["boss_room"] and !path[active_room_val]["cleared"]:
 			active_room.boss_room = true
@@ -182,6 +186,10 @@ func change_room():
 			prev_char3 = char3
 			char3.queue_free()
 		generate_character()
+		
+		active_room.char_ids = [character, char2, char3]
+		active_room.update_enemy_char_list()
+		
 		character.generate_minimap(path, active_room_val)
 		
 		BuffHandler.save_sprites()
@@ -212,6 +220,7 @@ func next_level():
 	if char3 != null:
 		char_data[2] = char3.send_data()
 		char3.queue_free()
+	GameHandler.set_char_data(char_data)
 	GameHandler.change_handler(self,"route")
 		
 func generate_doors():
@@ -294,8 +303,7 @@ func compute_stats():
 	max_level_size = ceil(room_count/2)+1
 	enemy_budget = 2*floor(pow(level,1.5))
 
-func generate_path(r_count, max_size, l_seed): #room count and max size of map (nxn)
-	rand_seed(l_seed)
+func generate_path(r_count, max_size): #room count and max size of map (nxn)
 	var temp_path = []
 	var coord = Vector2.ZERO
 	while(temp_path.size() < r_count):
@@ -419,6 +427,8 @@ func load_unit(dest, obj):	#For getting preloaded data
 		add_child(char3)
 		char3.generate_minimap(path, active_room_val)
 		BuffHandler.add_character(char3)
+	active_room.char_ids = [character, char2, char3]
+	active_room.update_enemy_char_list()
 	unpause()
 
 func change_active_unit(x,y): #x - new unit, y - old unit
@@ -445,6 +455,8 @@ func change_active_unit(x,y): #x - new unit, y - old unit
 	if x == 2:
 		char3.activate(true)
 		char3.position = pos
+		
+	active_room.character_switch()
 
 func generate_sfx(sfx_name, source):
 	var sfx_obj = sfx_base.instance()

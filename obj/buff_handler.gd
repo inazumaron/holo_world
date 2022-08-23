@@ -202,7 +202,6 @@ func damage_handler(damage, effects, buffs, source):
 
 func update_buffs(effects, source):
 	if is_player(source):
-		print("update buff effects", effects)
 		var i = get_p_index(source)
 		var key = effects.keys()
 		char_nodes[i]['buffs'][key[0]] = effects[key[0]]

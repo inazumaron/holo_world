@@ -32,6 +32,7 @@ var item2 = "flare_collab"
 #Game related data
 var level = 1
 var level_list = []
+var char_data = null	#To be sent by level_handlers
 
 const MAX_LEVELS = 10		#how many levels 
 const WORLD_NUM = 5		#amount of available worlds
@@ -46,7 +47,7 @@ var player_pos = Vector2.ZERO
 var level_val = ""
 
 func _ready():
-	generate_seed("wah")
+	generate_seed("nah")
 	load_skill_icons()
 
 func generate_seed(rng):
@@ -254,7 +255,9 @@ func calc_xp(data, xp):
 		data["LVL"] += 1
 		level_ups += 1
 	return [data, level_ups]
+
 #============================================  get var funcitons
+
 func get_char_stat(n):
 	if n == main_char:
 		return main_char_stats
@@ -270,6 +273,9 @@ func get_active_char(): #Returns active character code
 		return co_char_1
 	if active_character == 2:
 		return co_char_2
+
+func get_active_char_index():
+	return active_character
 
 func get_char_pos():
 	if active_character == 0:
@@ -293,7 +299,11 @@ func get_char_path(x):
 	else:
 		return char_paths[str(x)]
 
+func get_char_data():
+	return char_data
+
 #============================================  set var functions
+
 func set_next_step(x):
 	next_step = x
 
@@ -306,7 +316,11 @@ func set_world_id(id):
 func set_main_char(x):
 	main_char = x
 
+func set_char_data(data):
+	char_data = data
+
 #==============================================  misc functions
+
 var skill_icons = {}
 
 func load_skill_icons():

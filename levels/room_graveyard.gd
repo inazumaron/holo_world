@@ -47,6 +47,7 @@ func create_enemies():
 					var temp = e_1_1.instance()
 					temp.position = (enemy_pos[rng.randi()%enemy_pos.size()] - screen_offset) * 64
 					temp.SEED = rng.randi()
+					temp.player_id = char_ids
 					add_child(temp)
 					enemy_list.append(temp)
 					enemy_cost -= enemy_bases[i]["cost"]
@@ -80,6 +81,7 @@ var obs_list = []
 var level = 1
 var rng = RandomNumberGenerator.new()
 var enemy_pos = null
+var char_ids = [null,null,null]
 
 onready var tilemap = $TileMap
 onready var textbox = $TextBox/data
@@ -116,6 +118,15 @@ func _process(delta):
 			next_dialogue_click = false
 			dialogue_page += 1
 			play_dialogue()
+
+func update_enemy_char_list():
+	for i in enemy_list:
+		i.player_id = char_ids
+
+func character_switch():
+	#called when player switches character. will update enemies target id
+	for i in enemy_list:
+		i.update_active_player()
 
 func boss_room_setup():
 	enemy_cost = 0
@@ -186,6 +197,7 @@ func generate_obstacles(data):
 	gen_enemy_pos(data)
 
 func generate_hazards():
+	seed(room_seed)
 	while hazard_cost > 0:
 		var pos = Vector2((randi()%room_size-3)+2,(randi()%room_size-3)+2)
 		var hazard = hazard_base.instance()

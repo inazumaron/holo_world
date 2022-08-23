@@ -42,6 +42,8 @@ var dead = false
 var can_move = true
 var can_attack = true
 
+var player_id = [null,null,null]	#for easy changing targets when player switches character. Provided by level hadnler
+
 var rng = RandomNumberGenerator.new()
 var dvar = true
 var multipliers = {
@@ -185,6 +187,11 @@ func sgn(x):
 	if x>0:
 		return 1
 	return -1
+
+func update_active_player():
+	for i in targets:
+		if i["id"].BODY_TYPE == "player_character":
+			i["id"] = player_id[GameHandler.get_active_char_index()]
 
 func _on_DetectRange_body_entered(body):
 	if body.is_in_group("player"):
