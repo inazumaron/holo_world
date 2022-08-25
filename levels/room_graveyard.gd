@@ -6,6 +6,7 @@ extends Node2D
 #		*unless of course adding new features
 
 #Variables
+const map_name = "graveyard"
 const wall = true # for tiles extending 2 tiles
 const variation = 2 #amount of variation of same tiles 1-no variety
 const tile = {
@@ -20,9 +21,10 @@ const hazard_data = [
 	}},
 	{"name":"gy_swamp_", "level":1, "cost":1, "vars":2, "data":{
 		"onEntry":true, "continious":true, "effects":{"swampSlow":{"slow":[0.5, 1, 1, "bg"]}}
-	}}
-]
+	}}]
 const obs_base = preload("res://levels/obstacle_small.tscn")
+const obs_med_base = preload("res://levels/obstacle_med.tscn")
+const obs_big_base = preload("res://levels/obstacle_big.tscn")
 const e_1_1 = preload("res://enemies/gy_zombie_basic.tscn")
 const boss_base = preload("res://enemies/boss.tscn")
 
@@ -36,6 +38,7 @@ var boss_room = false
 const boss_dialogue = [["Nee...", "What do you think you're doing here", "You wanna die?"]]
 const boss_main = ["I see", "You want to take everything away from me huh", "Id like to see you try"]
 var boss_hp_ui = "temp"
+var bhp_link = [null, null]
 
 #Function/s
 func create_enemies():
@@ -133,8 +136,16 @@ func boss_room_setup():
 	var temp_boss = boss_base.instance()
 	temp_boss.position = Vector2.ZERO
 	temp_boss.hp_ui = boss_hp_ui
+	print("gy bhp link ",bhp_link)
+	temp_boss.hp_link = bhp_link
 	add_child(temp_boss)
 	enemy_list.append(temp_boss)
+
+func update_bhp_link(data):
+	bhp_link = data
+	for i in enemy_list:
+		if i.BODY_TYPE == "enemy_boss":
+			i.hp_link = bhp_link
 
 func create_room():
 	for y in range(0, screen_size):
@@ -177,22 +188,28 @@ func generate_obstacles(data):
 	match data[0]:
 		"point":
 			for i in range(1,data.size()):
-				temp_obs = obs_base.instance()
+				if data.size() > 2:
+					temp_obs = obs_med_base.instance()
+				else:
+					temp_obs = obs_big_base.instance()
 				temp_obs.position = (data[i]-screen_offset)*64
 				temp_obs.z_index = 1
 				add_child(temp_obs)
+				temp_obs.play(map_name)
 				obs_list.append(temp_obs)
 		"range":
 			for i in range(1,data.size()):
+				print(i)
 				if i%2 == 1:
 					var a = data[i]
 					var b = data[i+1]
-					for x in range(a.x, b.x):
-						for y in range(a.y, b.y):
+					for x in range(a.x, b.x + 1):
+						for y in range(a.y, b.y + 1):
 							temp_obs = obs_base.instance()
 							temp_obs.position = (Vector2(x,y)-screen_offset)*64 + obs_offset
 							temp_obs.z_index = 1
 							add_child(temp_obs)
+							temp_obs.play(map_name)
 							obs_list.append(temp_obs)
 	gen_enemy_pos(data)
 

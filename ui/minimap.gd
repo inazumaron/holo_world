@@ -8,9 +8,16 @@ var room_list = []
 var room = preload("res://ui/minimap_room.tscn")
 # Called when the node enters the scene tree for the first time.
 func generate_minimap():
+	#compute offset for minimap placement
+	var max_x = -1
+	var offset = Vector2(0,0)
+	for i in map:
+		if i["coord"].x > max_x:
+			max_x = i["coord"].x
+	offset.x = 32 * (max_x - 2)
 	for i in map:
 		var room_inst = room.instance()
-		room_inst.position = (i["coord"] * 32) + screen
+		room_inst.position = (i["coord"] * 32) + screen - offset
 		if i["cleared"]:
 			room_inst.active(false)
 		else:

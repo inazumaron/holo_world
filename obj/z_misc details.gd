@@ -81,14 +81,20 @@ const BODY_TYPE = [ #for kinematic bodies, to help identify
 ]
 
 #to do
+#	hazards placement to avoid obstacles
+#	object z indexes may be checked
 #	code more of flares skill tree
-#	randomize obstacles
 
 #Current bugs
 #	Level up buffs will be given to ACTIVE character. So for future implementation for shared xp, deal with this one first
 #		Affected scripts are: Game handler and level handler
 
 #Done today
+#	randomize obstacles
+#	minimap offset added to fit in screen
+#	obstacles not appearing except big
+
+#	added big and medium obstacle
 #	rename gd files (which is expected to be duplicated) to be based on their folder placement (besides player folder)
 #	hazard positions and type not consistent based on room seed
 #	Enemy tracking does not shift to active characters

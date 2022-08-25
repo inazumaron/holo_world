@@ -206,6 +206,11 @@ func change_room():
 		if path[active_room_val]["boss_room"] and !path[active_room_val]["cleared"]:
 			#dialogue()
 			active_room.boss_hp_ui = character.generate_boss_hp()
+			
+			if char3 != null:
+				active_room.update_bhp_link([char2.generate_boss_hp(), char3.generate_boss_hp()])
+			elif char2 != null:
+				active_room.update_bhp_link([char2.generate_boss_hp(), null])
 	else:
 		next_level()
 		
