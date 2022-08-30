@@ -23,6 +23,7 @@ var SKILL_LIST = []			#For skill tree usage
 var ACTIVE = true			#for collab on field
 const WEAPON_PATH = "res://weapons/i_pekora_bombs.tscn"
 const CODE = 133
+var connected_signals = {}
 
 var can_move = true
 var can_attack = true

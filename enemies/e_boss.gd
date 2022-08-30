@@ -34,6 +34,7 @@ var can_attack = true
 var anim_dir = 1 #1-right, -1 left
 var hp_ui
 var hp_link = [null, null]
+var connected_signals = {}
 
 var player_id = [null,null,null]
 

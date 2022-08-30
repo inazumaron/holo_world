@@ -51,6 +51,8 @@ var queue_next = false		#mainly in ending animation, queue when finished
 signal EntityHit(damage, effect)
 
 func _ready():
+	z_index = 2
+	
 	if posFinal != Vector2.ZERO:
 		var d = posFinal - global_position
 		velocity = (d/duration) - (0.5 * acceleration * duration)

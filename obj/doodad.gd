@@ -20,6 +20,8 @@ var damage = 0
 var buffs = {}
 var effects = []
 var bodies = []
+var id = randi()
+var connected_signals = {}
 
 signal DoodadHit(damage, effect)
 
@@ -70,8 +72,14 @@ func free_self():
 
 func apply_damage():
 	for b in bodies:
-		self.connect("DoodadHit", b, "take_damage")
-		emit_signal("DoodadHit", damage, effects)
+		if !("DoodadHit" in b.connected_signals):
+			self.connect("DoodadHit", b, "take_damage")
+			b.connected_signals["DoodadHit"] = [damage, effects]
+			emit_signal("DoodadHit", damage, effects)
+		else:
+			var temp = b.connected_signals["DoodadHit"]
+			b.connected_signals["DoodadHit"] = [damage + temp[0], effects]
+			print("doodad skipping ", damage + temp[0])
 
 func _on_AnimatedSprite_animation_finished():
 	if free_after:

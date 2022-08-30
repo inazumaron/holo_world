@@ -86,6 +86,7 @@ const BODY_TYPE = [ #for kinematic bodies, to help identify
 #	code more of flares skill tree
 
 #Current bugs
+#	Same signals conflict when 
 #	Level up buffs will be given to ACTIVE character. So for future implementation for shared xp, deal with this one first
 #		Affected scripts are: Game handler and level handler
 

@@ -88,7 +88,7 @@ func c133_tntBarrel(source, buffs):
 	barrel.add_to_group("neutral")
 	barrel.position = source.position
 	barrel.animation_to_grow = "tnt_barrel_explode"
-	barrel.animation_growth_rate = 2
+	barrel.animation_growth_rate = 4
 	barrel.group = "player"
 	get_tree().get_root().add_child(barrel)
 	barrel.play("tnt_barrel_idle")

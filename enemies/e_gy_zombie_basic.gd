@@ -43,6 +43,7 @@ var can_move = true
 var can_attack = true
 
 var player_id = [null,null,null]	#for easy changing targets when player switches character. Provided by level hadnler
+var connected_signals = {}
 
 var rng = RandomNumberGenerator.new()
 var dvar = true

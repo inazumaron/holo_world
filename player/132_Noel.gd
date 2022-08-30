@@ -67,6 +67,7 @@ var item_base = preload("res://ui/item_ui.tscn")
 var item = null
 var bhp_base = preload("res://ui/boss_hp.tscn")
 var bhp = null
+var connected_signals = {}
 
 var weapon_base = preload(WEAPON_PATH)
 var weapon = weapon_base.instance()
