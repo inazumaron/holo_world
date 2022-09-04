@@ -91,10 +91,11 @@ const BODY_TYPE = [ #for kinematic bodies, to help identify
 #		Affected scripts are: Game handler and level handler
 
 #Done today
+
+
 #	randomize obstacles
 #	minimap offset added to fit in screen
 #	obstacles not appearing except big
-
 #	added big and medium obstacle
 #	rename gd files (which is expected to be duplicated) to be based on their folder placement (besides player folder)
 #	hazard positions and type not consistent based on room seed
