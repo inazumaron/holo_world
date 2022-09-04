@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://weapons/w_laser.gd" type="Script" id=1]
+[ext_resource path="res://resc/particles/glowing_circle.png" type="Texture" id=2]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 22.8012, 159.08 )
@@ -10,6 +11,18 @@ background_mode = 4
 glow_enabled = true
 glow_blend_mode = 0
 glow_bicubic_upscale = true
+
+[sub_resource type="ParticlesMaterial" id=3]
+emission_shape = 2
+emission_box_extents = Vector3( 10, 10, 1 )
+flag_disable_z = true
+direction = Vector3( -1, 0, 0 )
+spread = 60.0
+gravity = Vector3( 0, 0, 0 )
+initial_velocity = 75.0
+initial_velocity_random = 0.2
+orbit_velocity = 0.0
+orbit_velocity_random = 0.0
 
 [node name="RayCast2D" type="RayCast2D"]
 cast_to = Vector2( 1000, 0 )
@@ -29,3 +42,9 @@ shape = SubResource( 1 )
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource( 2 )
+
+[node name="TargetParticle" type="Particles2D" parent="."]
+scale = Vector2( 0.5, 0.5 )
+emitting = false
+process_material = SubResource( 3 )
+texture = ExtResource( 2 )

@@ -1,19 +1,25 @@
 extends RayCast2D
 
-#For usage, tweak unhandled input for when to use laser
-#Target can be acquired thru get_collider() function
+#This is meant to be a template, dont use with actual characters or enemies, just use as basis when
+#making their weapons
 
 var is_casting := false setget set_is_casting
 var laser_duration := 0.5
 var timer := 0.5	#for handling laser duration
 var cooldown_duration := 1
 var cooldown := 1	#for cooldown in attacks
+var damage_cooldown := 0.5
+var damage_timer := 0.1 #damage cooldown for dps
+var group := "player"
+var dps := true		#true - deals constant damage, false - deals damage once
 
-var buffs
+var buffs = {}
 var multipliers
 var offsets
 var damage := 1
 var dir
+
+signal laser_damage(damage, effect)
 
 func _ready() -> void:
 	set_physics_process(false)
@@ -28,6 +34,20 @@ func attack(target = null) -> void:
 			self.look_at(get_global_mouse_position())
 		else:
 			self.look_at(target)
+
+func target_hit(delta):
+	#Apply damage to body hit
+	var target_body = get_collider()
+	
+	if target_body.has_method("take_damage") and target_body.is_in_group("enemy"):
+		if dps:
+			if damage_timer <= 0:
+				damage_timer = damage_cooldown
+				self.connect("laser_damage",target_body, "take_damage")
+				emit_signal("laser_damage",damage,buffs)
+				self.disconnect("laser_damage",target_body,"take_damage")
+			else:
+				damage_timer -= delta
 
 func _process(delta):
 	if cooldown > 0:
@@ -44,6 +64,8 @@ func _physics_process(delta):
 	
 	if is_colliding():
 		cast_point = to_local(get_collision_point())
+		target_hit(delta)
+		$TargetParticle.position = cast_point
 		
 	$Line2D.points[1] = cast_point
 	
@@ -61,8 +83,10 @@ func appear() -> void:
 	$Tween.stop_all()
 	$Tween.interpolate_property($Line2D, "width",0, 10.0, 0.2)
 	$Tween.start()
+	$TargetParticle.emitting = true
 
 func disappear() -> void:
 	$Tween.stop_all()
 	$Tween.interpolate_property($Line2D, "width", 10.0, 0, 0.2)
 	$Tween.start()
+	$TargetParticle.emitting = false
