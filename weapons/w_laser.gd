@@ -68,6 +68,8 @@ func _physics_process(delta):
 		$TargetParticle.position = cast_point
 		
 	$Line2D.points[1] = cast_point
+	$BeamParticle.position = cast_point * 0.5
+	$BeamParticle.process_material.emission_box_extents.x = cast_point.length() * 0.5
 	
 func set_is_casting(cast: bool) -> void:
 	is_casting = cast
@@ -81,12 +83,14 @@ func set_is_casting(cast: bool) -> void:
 	
 func appear() -> void:
 	$Tween.stop_all()
-	$Tween.interpolate_property($Line2D, "width",0, 10.0, 0.2)
+	$Tween.interpolate_property($Line2D, "width",0, 5.0, 0.2)
 	$Tween.start()
 	$TargetParticle.emitting = true
+	$BeamParticle.emitting = true
 
 func disappear() -> void:
 	$Tween.stop_all()
-	$Tween.interpolate_property($Line2D, "width", 10.0, 0, 0.2)
+	$Tween.interpolate_property($Line2D, "width", 5.0, 0, 0.2)
 	$Tween.start()
 	$TargetParticle.emitting = false
+	$BeamParticle.emitting = false
