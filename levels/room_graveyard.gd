@@ -13,7 +13,8 @@ const tile = {
 	"path":0, "up":2, "wall":4, "blank":6, "left":8, "right":10, "down":12, "uleft": 14, "uright":16, "wleft":18,
 	"wright":20, "lleft":22, "lright":24}
 const enemy_data = [
-	{"name":"zombie_basic","level":1,"cost":1}
+	{"name":"zombie_basic","level":1,"cost":0.5},
+	{"name":"fandead_crystal","level":1,"cost":1}
 	]
 const hazard_data = [
 	{"name":"gy_vines_","level":1, "cost":1, "vars":2, "data":{
@@ -26,6 +27,7 @@ const obs_base = preload("res://levels/obstacle_small.tscn")
 const obs_med_base = preload("res://levels/obstacle_med.tscn")
 const obs_big_base = preload("res://levels/obstacle_big.tscn")
 const e_1_1 = preload("res://enemies/gy_zombie_basic.tscn")
+const e_1_2 = preload("res://enemies/gy_fandead_crystal.tscn")
 const boss_base = preload("res://enemies/boss.tscn")
 
 const chp_1 = preload("res://resc/cards/char_card_flare.png")
@@ -45,15 +47,18 @@ func create_enemies():
 	if !boss_room:
 		while enemy_cost > 0:
 			var i = rng.randi()%enemy_bases.size()
+			var temp
 			match enemy_bases[i]["name"]:
 				"zombie_basic":
-					var temp = e_1_1.instance()
-					temp.position = (enemy_pos[rng.randi()%enemy_pos.size()] - screen_offset) * 64
-					temp.SEED = rng.randi()
-					temp.player_id = char_ids
-					add_child(temp)
-					enemy_list.append(temp)
-					enemy_cost -= enemy_bases[i]["cost"]
+					temp = e_1_1.instance()
+				"fandead_crystal":
+					temp = e_1_2.instance()
+			temp.position = (enemy_pos[rng.randi()%enemy_pos.size()] - screen_offset) * 64
+			temp.SEED = rng.randi()
+			temp.player_id = char_ids
+			add_child(temp)
+			enemy_list.append(temp)
+			enemy_cost -= enemy_bases[i]["cost"]
 
 #===============================================================================
 #======== Dont edit past this unless you know what you're doing ================

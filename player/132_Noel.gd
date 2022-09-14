@@ -22,7 +22,7 @@ var DAMAGE_ANIM_DUR = 0.2
 var SKILL_LIST = []			#For skill tree usage
 var ACTIVE = true			#for collab on field
 #const WEAPON_PATH = "res://weapons/m_noel_mace.tscn"
-const WEAPON_PATH = "res://weapons/r_laser.tscn"
+const WEAPON_PATH = "res://weapons/m_noel_mace.tscn"
 const CODE = 132
 
 var can_move = true
