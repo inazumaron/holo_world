@@ -14,7 +14,7 @@ const ATTACK_DELAY = 0.5	#delay for attack damage application once attack animat
 const DAMAGE_ANIM_DUR = 0.2
 const WANDER_DURATION = 1
 const APPEAR_DURATION = 1.2
-const CHASER = -1			# 1 - chases player, -1 - movement not affected by player, 0 - runs away from player
+const CHASER = 0			# 1 - chases player, -1 - movement not affected by player, 0 - runs away from player
 const MAX_HP = 3
 const DEF = 0
 const ACTIVE = true
@@ -38,7 +38,7 @@ var appear_timer = APPEAR_DURATION #starting animation duration
 var movement = Vector2.ZERO
 var npc_can_move = true
 var dead = false
-var state := "idle"		#idle or attack
+var state := "idle"		#idle, semi, charged - for animation purposes
 
 var can_move = true
 var can_attack = true
@@ -129,10 +129,10 @@ func timer_handler(delta):
 func move(delta):
 	if targets.size() > 0:
 		chase()
-		play_animation("walk")
+		play_animation("idle")
 	elif npc_can_move:
 		wander()
-		play_animation("walk")
+		play_animation("idle")
 	else:
 		apply_friction(0.5)
 		play_animation("idle")
@@ -164,10 +164,9 @@ func attack():
 	#start charging
 	if attack_target != null and attack_timer <= 0 and state != "dead":
 		attack_timer = ATTACK_COOLDOWN
-		play_animation("charge")
-		state = "charge"
+		play_animation("attack")
+		state = "idle"
 		can_attack = false
-		weapon.target_lock(attack_target.position)
 
 func weap_attack():
 	#fire laser
@@ -184,27 +183,21 @@ func damage(v):
 		damage_anim_timer = DAMAGE_ANIM_DUR
 		HP -= v
 		if HP <= 0:
-			if state == "idle":
-				dead = true
-			else:
-				play_animation("explode")
+			dead = true
 		else:
 			play_animation("damaged")
 
 func play_animation(x):
 	#priority: attack - damaged - walk
-	if x == "explode" or state == "dead":
-		state = "dead"
-		$AnimatedSprite.play("explode")
-	elif damage_anim_timer > 0:
-		if state == "idle" or state == "charge":
-			$AnimatedSprite.play("damaged")
-		else:
-			weapon.cancel_laser()
-			$AnimatedSprite.play("damaged_charged")
-		state = "idle"
+	if x == "attack":
+		$AnimatedSprite.play("attack")
 	else:
-		$AnimatedSprite.play(x)
+		if state == "idle":
+			$AnimatedSprite.play(x+"_1")
+		if state == "semi":
+			$AnimatedSprite.play(x+"_2")
+		if state == "charged":
+			$AnimatedSprite.play(x+"_3")
 	$AnimatedSprite.scale.x = anim_dir * -1
 
 func apply_friction(amount):
@@ -243,10 +236,3 @@ func _on_AttackRange_body_exited(body):
 	if body == attack_target:
 		attack_target = null
 
-func _on_AnimatedSprite_animation_finished():
-	if state == "charge":
-		state = "attack"
-		weap_attack()
-		play_animation("attack")
-	if state == "dead":
-		dead = true

@@ -3,18 +3,18 @@ extends KinematicBody2D
 const MOVE_TIMER = 5
 const FIRE_TIMER = 2 #delay before 
 const ACCELERATION = 1000
-const MAX_SPEED = 100
-const COST = 1
+const MAX_SPEED = 200
+const COST = 0.5
 const XP = 2
 const TO_PLAYER = true
 const ATTACK_DAMAGE = 1
-const ATTACK_COOLDOWN = 5
-const ATTACK_DURATION = 2
+const ATTACK_COOLDOWN = 1
+const ATTACK_DURATION = 0.5
 const ATTACK_DELAY = 0.5	#delay for attack damage application once attack animation starts
 const DAMAGE_ANIM_DUR = 0.2
 const WANDER_DURATION = 1
 const APPEAR_DURATION = 1.2
-const CHASER = -1			# 1 - chases player, -1 - movement not affected by player, 0 - runs away from player
+const CHASER = 1			# 1 - chases player, -1 - movement not affected by player, 0 - runs away from player
 const MAX_HP = 3
 const DEF = 0
 const ACTIVE = true
@@ -24,7 +24,7 @@ var buffs = {"passive":{"weight":1}}		#place all active buffs/debuffs here, shou
 var buff_timers = {}
 var EFFECTS = {}			#for offensive statuses, damage bonus, inflict poison, etc
 var SEED = 0
-var HP = 3
+var HP = 2
 var anim_dir = 1 #1-right, -1 left
 var direction = 0
 var targets = []
@@ -38,7 +38,6 @@ var appear_timer = APPEAR_DURATION #starting animation duration
 var movement = Vector2.ZERO
 var npc_can_move = true
 var dead = false
-var state := "idle"		#idle or attack
 
 var can_move = true
 var can_attack = true
@@ -69,28 +68,23 @@ var offsets = {
 	"SPECIAL_COOLDOWN":1
 }	#For buffs adding flat increase
 
-var weapon_base = preload("res://weapons/e_fandead_laser.tscn")
-var weapon
-
 func _ready():
 	rng.seed = SEED
 	add_to_group("enemy")
 	$AnimatedSprite.speed_scale = 0
-	play_animation("appear")
-	weapon = weapon_base.instance()
-	add_child(weapon)
+	play_animation("walk")
 
 func _process(delta):
 	if $AnimatedSprite.speed_scale == 0:
 		$AnimatedSprite.speed_scale = 1
 	timer_handler(delta)
 	if appear_timer <= 0:
-		if attack_timer > 0:
+		if attack_target == null:
 			if damage_anim_timer <= 0 and attack_anim_timer <= 0:		#wont move if damaged or attacking
-				if can_move and state == "idle":
+				if can_move:
 					move(delta)
 		else:
-			if can_attack and damage_anim_timer <= 0:
+			if can_attack:
 				attack()
 
 func sanity_check():		#for bug handling
@@ -103,39 +97,32 @@ func sanity_check():		#for bug handling
 func timer_handler(delta):
 	if appear_timer>0:
 		appear_timer -= delta
-		
 	if attack_anim_timer>0:
 		attack_anim_timer -= delta
-		if attack_anim_timer <= 0:
-			play_animation("idle")
-			if state != "dead":
-				state = "idle"
-		
 	if damage_anim_timer>0:
 		damage_anim_timer -= delta
-		
 	if attack_timer>0:
 		attack_timer -= delta
-		if attack_timer <= 0:
-			can_attack = true
-		
 	if move_timer>0:
 		move_timer -= delta
-		
 	if move_timer <= 0:
 		move_timer = WANDER_DURATION
 		npc_can_move = !npc_can_move
+	if attack_delay_timer > 0 and attack_delay_timer != -1:
+		attack_delay_timer -= delta
+		if attack_delay_timer <= 0:
+			if attack_target != null:
+				attack_target.take_damage(ATTACK_DAMAGE,EFFECTS)
+			attack_delay_timer = -1
 
 func move(delta):
 	if targets.size() > 0:
 		chase()
-		play_animation("walk")
 	elif npc_can_move:
 		wander()
-		play_animation("walk")
 	else:
 		apply_friction(0.5)
-		play_animation("idle")
+	play_animation("walk")
 	apply_movement(ACCELERATION*delta)
 	anim_dir = sgn(movement.x)
 	movement = move_and_slide(movement)
@@ -161,20 +148,11 @@ func get_target():
 	return targets[max_aggro_index]["id"]
 
 func attack():
-	#start charging
-	if attack_target != null and attack_timer <= 0 and state != "dead":
+	if attack_target != null and attack_timer <= 0:
 		attack_timer = ATTACK_COOLDOWN
-		play_animation("charge")
-		state = "charge"
-		can_attack = false
-		weapon.target_lock(attack_target.position)
-
-func weap_attack():
-	#fire laser
-	attack_anim_timer = ATTACK_DURATION
-	weapon.damage = ATTACK_DAMAGE
-	weapon.buffs = EFFECTS
-	weapon.attack()
+		attack_anim_timer = ATTACK_DURATION
+		attack_delay_timer = ATTACK_DELAY
+		play_animation("attack")
 
 func take_damage(damage, effect):
 	BuffHandler.damage_handler(damage, effect, buffs, self)
@@ -183,29 +161,19 @@ func damage(v):
 	if v > 0:
 		damage_anim_timer = DAMAGE_ANIM_DUR
 		HP -= v
+		play_animation("damage")
 		if HP <= 0:
-			if state == "idle":
-				dead = true
-			else:
-				play_animation("explode")
-		else:
-			play_animation("damaged")
+			dead = true
 
 func play_animation(x):
 	#priority: attack - damaged - walk
-	if x == "explode" or state == "dead":
-		state = "dead"
-		$AnimatedSprite.play("explode")
+	if attack_anim_timer > 0:
+		$AnimatedSprite.play("attack")
 	elif damage_anim_timer > 0:
-		if state == "idle" or state == "charge":
-			$AnimatedSprite.play("damaged")
-		else:
-			weapon.cancel_laser()
-			$AnimatedSprite.play("damaged_charged")
-		state = "idle"
+		$AnimatedSprite.play("damage")
 	else:
 		$AnimatedSprite.play(x)
-	$AnimatedSprite.scale.x = anim_dir * -1
+	$AnimatedSprite.scale.x = anim_dir
 
 func apply_friction(amount):
 	movement *= amount
@@ -242,11 +210,3 @@ func _on_AttackRange_body_entered(body): #does not account for multiple targets 
 func _on_AttackRange_body_exited(body):
 	if body == attack_target:
 		attack_target = null
-
-func _on_AnimatedSprite_animation_finished():
-	if state == "charge":
-		state = "attack"
-		weap_attack()
-		play_animation("attack")
-	if state == "dead":
-		dead = true

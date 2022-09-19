@@ -306,7 +306,7 @@ func generate_character():
 func compute_stats():
 	room_count = floor(pow(level,1.5)) + 5
 	max_level_size = ceil(room_count/2)+1
-	enemy_budget = 2*floor(pow(level,1.5))
+	enemy_budget = 5*floor(pow(level,1.5))
 
 func generate_path(r_count, max_size): #room count and max size of map (nxn)
 	var temp_path = []

@@ -1,10 +1,7 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://weapons/w_e_fandead_laser.gd" type="Script" id=1]
 [ext_resource path="res://resc/particles/glowing_circle.png" type="Texture" id=2]
-
-[sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 22.8012, 159.08 )
 
 [sub_resource type="Gradient" id=4]
 colors = PoolColorArray( 1, 1, 1, 1, 1, 1, 1, 0 )
@@ -71,12 +68,6 @@ points = PoolVector2Array( 0, 0, 100, 0 )
 default_color = Color( 1, 2, 1.4, 1 )
 
 [node name="Tween" type="Tween" parent="."]
-
-[node name="StaticBody2D" type="StaticBody2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
-position = Vector2( 668.319, 0.207764 )
-shape = SubResource( 1 )
 
 [node name="TargetParticle" type="Particles2D" parent="."]
 scale = Vector2( 0.5, 0.5 )

@@ -14,7 +14,8 @@ const tile = {
 	"wright":20, "lleft":22, "lright":24}
 const enemy_data = [
 	{"name":"zombie_basic","level":1,"cost":0.5},
-	{"name":"fandead_crystal","level":1,"cost":1}
+	{"name":"fandead_crystal","level":1,"cost":1},
+	{"name":"deadbeat_skull","level":1,"cost":0.5}
 	]
 const hazard_data = [
 	{"name":"gy_vines_","level":1, "cost":1, "vars":2, "data":{
@@ -28,6 +29,7 @@ const obs_med_base = preload("res://levels/obstacle_med.tscn")
 const obs_big_base = preload("res://levels/obstacle_big.tscn")
 const e_1_1 = preload("res://enemies/gy_zombie_basic.tscn")
 const e_1_2 = preload("res://enemies/gy_fandead_crystal.tscn")
+const e_1_3 = preload("res://enemies/gy_deadbeat_skull.tscn")
 const boss_base = preload("res://enemies/boss.tscn")
 
 const chp_1 = preload("res://resc/cards/char_card_flare.png")
@@ -53,6 +55,8 @@ func create_enemies():
 					temp = e_1_1.instance()
 				"fandead_crystal":
 					temp = e_1_2.instance()
+				"deadbeat_skull":
+					temp = e_1_3.instance()
 			temp.position = (enemy_pos[rng.randi()%enemy_pos.size()] - screen_offset) * 64
 			temp.SEED = rng.randi()
 			temp.player_id = char_ids
@@ -195,8 +199,10 @@ func generate_obstacles(data):
 			for i in range(1,data.size()):
 				if data.size() > 2:
 					temp_obs = obs_med_base.instance()
+					temp_obs.scale *= 1.5
 				else:
 					temp_obs = obs_big_base.instance()
+					temp_obs.scale *= 2
 				temp_obs.position = (data[i]-screen_offset)*64
 				temp_obs.z_index = 1
 				add_child(temp_obs)

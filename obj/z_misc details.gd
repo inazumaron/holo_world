@@ -81,16 +81,18 @@ const BODY_TYPE = [ #for kinematic bodies, to help identify
 ]
 
 #to do
+#	code summoning enemies
 #	hazards placement to avoid obstacles
 #	object z indexes may be checked
 #	code more of flares skill tree
 
 #Current bugs
-#	FDC state not setting to dead when killed or gets overwritten when killed midlaser
 #	Level up buffs will be given to ACTIVE character. So for future implementation for shared xp, deal with this one first
 #		Affected scripts are: Game handler and level handler
 
 #Done today
+#	FDC state not setting to dead when killed or gets overwritten when killed midlaser
+#	fandead crystal doesnt stop attacking, set cooldown higher and let it move in between attacks
 
 
 #	randomize obstacles

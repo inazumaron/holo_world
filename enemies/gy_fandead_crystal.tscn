@@ -33,6 +33,21 @@ flags = 4
 atlas = ExtResource( 1 )
 region = Rect2( 320, 0, 64, 64 )
 
+[sub_resource type="AtlasTexture" id=7]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 192, 128, 64, 64 )
+
+[sub_resource type="AtlasTexture" id=8]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 256, 128, 64, 64 )
+
+[sub_resource type="AtlasTexture" id=9]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 320, 128, 64, 64 )
+
 [sub_resource type="AtlasTexture" id=15]
 flags = 4
 atlas = ExtResource( 1 )
@@ -57,21 +72,6 @@ region = Rect2( 192, 64, 64, 64 )
 flags = 4
 atlas = ExtResource( 1 )
 region = Rect2( 256, 64, 64, 64 )
-
-[sub_resource type="AtlasTexture" id=7]
-flags = 4
-atlas = ExtResource( 1 )
-region = Rect2( 192, 128, 64, 64 )
-
-[sub_resource type="AtlasTexture" id=8]
-flags = 4
-atlas = ExtResource( 1 )
-region = Rect2( 256, 128, 64, 64 )
-
-[sub_resource type="AtlasTexture" id=9]
-flags = 4
-atlas = ExtResource( 1 )
-region = Rect2( 320, 128, 64, 64 )
 
 [sub_resource type="AtlasTexture" id=26]
 flags = 4
@@ -118,6 +118,16 @@ flags = 4
 atlas = ExtResource( 1 )
 region = Rect2( 320, 256, 64, 64 )
 
+[sub_resource type="AtlasTexture" id=13]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 0, 192, 64, 64 )
+
+[sub_resource type="AtlasTexture" id=14]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 64, 192, 64, 64 )
+
 [sub_resource type="AtlasTexture" id=10]
 flags = 4
 atlas = ExtResource( 1 )
@@ -133,16 +143,6 @@ flags = 4
 atlas = ExtResource( 1 )
 region = Rect2( 128, 128, 64, 64 )
 
-[sub_resource type="AtlasTexture" id=13]
-flags = 4
-atlas = ExtResource( 1 )
-region = Rect2( 0, 192, 64, 64 )
-
-[sub_resource type="AtlasTexture" id=14]
-flags = 4
-atlas = ExtResource( 1 )
-region = Rect2( 64, 192, 64, 64 )
-
 [sub_resource type="SpriteFrames" id=29]
 animations = [ {
 "frames": [ SubResource( 1 ), SubResource( 2 ), SubResource( 3 ), SubResource( 4 ), SubResource( 5 ), SubResource( 6 ) ],
@@ -150,14 +150,14 @@ animations = [ {
 "name": "idle",
 "speed": 5.0
 }, {
-"frames": [ SubResource( 15 ), SubResource( 16 ), SubResource( 17 ), SubResource( 18 ), SubResource( 19 ) ],
-"loop": true,
-"name": "charge",
-"speed": 5.0
-}, {
 "frames": [ SubResource( 7 ), SubResource( 8 ), SubResource( 9 ) ],
 "loop": true,
 "name": "walk",
+"speed": 5.0
+}, {
+"frames": [ SubResource( 15 ), SubResource( 16 ), SubResource( 17 ), SubResource( 18 ), SubResource( 19 ) ],
+"loop": true,
+"name": "charge",
 "speed": 5.0
 }, {
 "frames": [ SubResource( 26 ), SubResource( 27 ), SubResource( 28 ) ],
@@ -170,15 +170,15 @@ animations = [ {
 "name": "explode",
 "speed": 5.0
 }, {
-"frames": [ SubResource( 10 ), SubResource( 11 ), SubResource( 12 ) ],
-"loop": true,
-"name": "attack",
-"speed": 6.0
-}, {
 "frames": [ SubResource( 13 ), SubResource( 14 ) ],
 "loop": true,
 "name": "damaged",
 "speed": 5.0
+}, {
+"frames": [ SubResource( 10 ), SubResource( 11 ), SubResource( 12 ) ],
+"loop": true,
+"name": "attack",
+"speed": 6.0
 } ]
 
 [sub_resource type="CapsuleShape2D" id=30]
@@ -189,7 +189,7 @@ height = 26.0095
 radius = 256.0
 
 [sub_resource type="CircleShape2D" id=32]
-radius = 200.0
+radius = 250.0
 
 [node name="fandeadCrystal" type="KinematicBody2D"]
 script = ExtResource( 2 )
